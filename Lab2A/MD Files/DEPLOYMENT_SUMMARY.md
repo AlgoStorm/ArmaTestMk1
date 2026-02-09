@@ -63,19 +63,19 @@ State:              running ✅
 Instance Type:      t3.micro
 Public IP:          54.91.122.42
 Subnet:             Public (10.0.1.0/24)
-IAM Role:           chrisbarm-instance-profile01 ✅
-Attached IAM Role:  chrisbarm-ec2-role01 ✅
-Security Group:     chrisbarm-ec2-sg01
+IAM Role:           jarvis-instance-profile01 ✅
+Attached IAM Role:  jarvis-ec2-role01 ✅
+Security Group:     jarvis-ec2-sg01
 Availability Zone:  us-east-1a
 ```
 
 ### RDS Instance
 ```
-Identifier:         chrisbarm-rds01
+Identifier:         jarvis-rds01
 State:              available ✅
 Engine:             mysql 8.0
 Instance Class:     db.t3.micro
-Endpoint:           chrisbarm-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com:3306
+Endpoint:           jarvis-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com:3306
 Database:           labdb
 Storage:            20 GB (gp3)
 Publicly Accessible: false ✅ (Security best practice)
@@ -86,26 +86,26 @@ Availability Zone:  us-east-1a (Primary in private subnet)
 
 ### Network
 ```
-VPC:                chrisbarm-vpc01 (10.0.0.0/16) ✅
-Public Subnets:     chrisbarm-public-subnet01 (10.0.1.0/24) ✅
-                    chrisbarm-public-subnet02 (10.0.2.0/24) ✅
-Private Subnets:    chrisbarm-private-subnet01 (10.0.101.0/24) ✅
-                    chrisbarm-private-subnet02 (10.0.102.0/24) ✅
-Internet Gateway:   chrisbarm-igw01 ✅
-NAT Gateway:        chrisbarm-nat01 ✅
+VPC:                jarvis-vpc01 (10.0.0.0/16) ✅
+Public Subnets:     jarvis-public-subnet01 (10.0.1.0/24) ✅
+                    jarvis-public-subnet02 (10.0.2.0/24) ✅
+Private Subnets:    jarvis-private-subnet01 (10.0.101.0/24) ✅
+                    jarvis-private-subnet02 (10.0.102.0/24) ✅
+Internet Gateway:   jarvis-igw01 ✅
+NAT Gateway:        jarvis-nat01 ✅
 ```
 
 ### Security
 ```
-EC2 Security Group:     chrisbarm-ec2-sg01 (sg-0fa563fc7b978c1ce)
+EC2 Security Group:     jarvis-ec2-sg01 (sg-0fa563fc7b978c1ce)
   ├─ Inbound:  HTTP/80 from 0.0.0.0/0 ✅
   └─ Outbound: All traffic ✅
 
-RDS Security Group:     chrisbarm-rds-sg01 (sg-07b6f3b0c45df9bd2)
+RDS Security Group:     jarvis-rds-sg01 (sg-07b6f3b0c45df9bd2)
   ├─ Inbound:  MySQL/3306 ONLY from sg-0fa563fc7b978c1ce ✅
   └─ Outbound: None (Not needed for RDS)
 
-IAM Role:               chrisbarm-ec2-role01 ✅
+IAM Role:               jarvis-ec2-role01 ✅
 Attached Policies:      - AmazonSSMManagedInstanceCore
                         - CloudWatchAgentServerPolicy
                         - secrets_policy (custom)
@@ -113,7 +113,7 @@ Attached Policies:      - AmazonSSMManagedInstanceCore
 Secrets Manager:        lab1a/rds/mysql ✅
   ├─ Username: admin
   ├─ Password: <encrypted>
-  ├─ Host:     chrisbarm-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com
+  ├─ Host:     jarvis-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com
   ├─ Port:     3306
   └─ Database: labdb
 ```
@@ -154,7 +154,7 @@ curl http://54.91.122.42/list
 ```bash
 # SSH into EC2 and test RDS connection:
 aws ssm start-session --target i-061b663d2d9d6ff80
-mysql -h chrisbarm-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com -u admin -p
+mysql -h jarvis-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com -u admin -p
 SHOW TABLES;
 SELECT * FROM notes;
 ```
@@ -172,8 +172,8 @@ SELECT * FROM notes;
 - HTTP port 80 accessible
 
 ✅ **RDS MySQL in Same VPC**
-- Instance: chrisbarm-rds01
-- Endpoint: chrisbarm-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com:3306
+- Instance: jarvis-rds01
+- Endpoint: jarvis-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com:3306
 - VPC: vpc-02c6c4d52c0974923
 - Database: labdb
 
@@ -183,8 +183,8 @@ SELECT * FROM notes;
 - NOT from 0.0.0.0/0 ✅
 
 ✅ **IAM Role Attached**
-- Role: chrisbarm-ec2-role01
-- Instance Profile: chrisbarm-instance-profile01
+- Role: jarvis-ec2-role01
+- Instance Profile: jarvis-instance-profile01
 - Policies:
   - AmazonSSMManagedInstanceCore
   - CloudWatchAgentServerPolicy
@@ -302,7 +302,7 @@ Before submitting, verify:
 2. **Verify RDS is reachable**:
    ```bash
    # From EC2:
-   nc -zv chrisbarm-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com 3306
+   nc -zv jarvis-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com 3306
    # Should say: succeeded or open
    ```
 
@@ -377,3 +377,4 @@ Deployment:         ✅ Complete
 **Last Updated**: January 20, 2026, 10:00 AM UTC  
 **Deployment Duration**: ~15 minutes  
 **Next Action**: Wait 2-5 minutes, then run tests
+
