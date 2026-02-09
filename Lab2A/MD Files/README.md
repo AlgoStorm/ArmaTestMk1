@@ -54,7 +54,7 @@ This lab demonstrates a **production-ready cloud architecture pattern** used in 
 ```bash
 # Verify EC2 is running
 aws ec2 describe-instances \
-  --filters "Name=tag:Name,Values=chrisbarm-ec2_01" \
+  --filters "Name=tag:Name,Values=jarvis-ec2_01" \
   --region us-east-1 \
   --query "Reservations[].Instances[].[InstanceId,State.Name,PublicIpAddress]" \
   --output table
@@ -68,7 +68,7 @@ aws ec2 describe-instances \
 ```bash
 # Verify RDS is available
 aws rds describe-db-instances \
-  --db-instance-identifier chrisbarm-rds01 \
+  --db-instance-identifier jarvis-rds01 \
   --region us-east-1 \
   --query "DBInstances[0].[DBInstanceStatus,Endpoint.Address,PubliclyAccessible]" \
   --output table
@@ -76,7 +76,7 @@ aws rds describe-db-instances \
 
 **Expected**:
 - Status: `available`
-- Endpoint: `chrisbarm-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com`
+- Endpoint: `jarvis-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com`
 - Publicly Accessible: `False` ✅ (security best practice)
 
 ### Step 3: Verify Security Groups
@@ -84,7 +84,7 @@ aws rds describe-db-instances \
 ```bash
 # Check RDS security group allows MySQL from EC2
 aws ec2 describe-security-group-rules \
-  --filters "Name=group-id,Values=$(aws ec2 describe-security-groups --filters Name=group-name,Values=chrisbarm-rds-sg01 --region us-east-1 --query SecurityGroups[0].GroupId --output text)" \
+  --filters "Name=group-id,Values=$(aws ec2 describe-security-groups --filters Name=group-name,Values=jarvis-rds-sg01 --region us-east-1 --query SecurityGroups[0].GroupId --output text)" \
   --region us-east-1 \
   --output table
 ```
@@ -102,7 +102,7 @@ aws ec2 describe-instances \
   --output text
 ```
 
-**Expected**: Should show ARN like `arn:aws:iam::198547498722:instance-profile/chrisbarm-instance-profile01`
+**Expected**: Should show ARN like `arn:aws:iam::198547498722:instance-profile/jarvis-instance-profile01`
 
 ### Step 5: Verify Secrets Manager
 
@@ -252,11 +252,11 @@ terraform_restart_fixed/
 - **Region**: `us-east-1`
 
 ### Database
-- **Identifier**: `chrisbarm-rds01`
+- **Identifier**: `jarvis-rds01`
 - **Engine**: MySQL 8.0
 - **Type**: `db.t3.micro` (free tier eligible)
 - **Storage**: 20 GB gp3
-- **Endpoint**: `chrisbarm-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com`
+- **Endpoint**: `jarvis-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com`
 - **Port**: 3306
 - **Database**: `labdb`
 - **Master User**: `admin` (in Secrets Manager)
@@ -268,10 +268,10 @@ terraform_restart_fixed/
 - **AZs**: us-east-1a, us-east-1b
 
 ### Security
-- **EC2 SG**: `sg-0fa563fc7b978c1ce` (chrisbarm-ec2-sg01)
-- **RDS SG**: `sg-07b6f3b0c45df9bd2` (chrisbarm-rds-sg01)
-- **IAM Role**: `chrisbarm-ec2-role01`
-- **Instance Profile**: `chrisbarm-instance-profile01`
+- **EC2 SG**: `sg-0fa563fc7b978c1ce` (jarvis-ec2-sg01)
+- **RDS SG**: `sg-07b6f3b0c45df9bd2` (jarvis-rds-sg01)
+- **IAM Role**: `jarvis-ec2-role01`
+- **Instance Profile**: `jarvis-instance-profile01`
 - **Secret**: `lab1a/rds/mysql` (Secrets Manager)
 
 ---
@@ -318,7 +318,7 @@ If not present, security group is misconfigured.
 **Check**:
 ```bash
 aws iam get-role-policy \
-  --role-name chrisbarm-ec2-role01 \
+  --role-name jarvis-ec2-role01 \
   --policy-name secrets_policy
 ```
 
@@ -396,3 +396,4 @@ If you encounter issues:
 5. Submit proof of completion
 
 Good luck! 🚀
+
