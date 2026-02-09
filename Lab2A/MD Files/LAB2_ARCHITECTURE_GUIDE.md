@@ -17,8 +17,8 @@
 │                         INTERNET                                │
 └───────────────────────┬─────────────────────────────────────────┘
                         │
-                        │ 1. chewbacca-growl.com
-                        │    app.chewbacca-growl.com
+                        │ 1. jarvis-roar.com
+                        │    app.jarvis-roar.com
                         ↓
         ┌───────────────────────────────────┐
         │  Route53 (DNS)                    │
@@ -38,7 +38,7 @@
         └───────────────────┬───────────────┘
                             │
                             │ 3. Custom header:
-                            │    X-Chewbacca-Growl
+                            │    X-jarvis-roar
                             │    + CloudFront IP prefix list
                             ↓
         ┌───────────────────────────────────┐
@@ -96,7 +96,7 @@ data "aws_ec2_managed_prefix_list" "cloudfront_origin_facing" {
 
 resource "aws_security_group_rule" "alb_ingress_cf_only" {
   type              = "ingress"
-  security_group_id = aws_security_group.chewbacca_alb_sg01.id
+  security_group_id = aws_security_group.jarvis_alb_sg01.id
   from_port         = 443
   to_port           = 443
   protocol          = "tcp"
@@ -121,7 +121,7 @@ resource "aws_security_group_rule" "alb_ingress_cf_only" {
 ```hcl
 # CloudFront adds the header
 custom_header {
-  name  = "X-Chewbacca-Growl"
+  name  = "X-jarvis-roar"
   value = random_password.secret_origin_value.result
 }
 
@@ -133,7 +133,7 @@ resource "aws_lb_listener_rule" "require_header" {
   
   condition {
     http_header {
-      http_header_name = "X-Chewbacca-Growl"
+      http_header_name = "X-jarvis-roar"
       values           = [random_password.secret_origin_value.result]
     }
   }
@@ -149,7 +149,7 @@ resource "aws_lb_listener_rule" "require_header" {
 **What it blocks**:
 ```
 ❌ Attacker guesses CloudFront IP ranges and sends request → 403 (no header)
-❌ Attacker adds fake header (X-Chewbacca-Growl: random) → 403 (wrong value)
+❌ Attacker adds fake header (X-jarvis-roar: random) → 403 (wrong value)
 ✅ CloudFront sends request with correct header → 200 (forwarded to target group)
 ```
 
@@ -184,7 +184,7 @@ resource "aws_wafv2_web_acl" "alb_waf" {
 }
 
 resource "aws_wafv2_web_acl_association" "alb_waf_assoc" {
-  resource_arn = aws_lb.chewbacca_alb01.arn
+  resource_arn = aws_lb.jarvis_alb01.arn
   web_acl_arn  = aws_wafv2_web_acl.alb_waf.arn
 }
 ```
@@ -206,7 +206,7 @@ resource "aws_wafv2_web_acl" "cloudfront_waf" {
   # ... rules ...
 }
 
-resource "aws_cloudfront_distribution" "chewbacca_cf01" {
+resource "aws_cloudfront_distribution" "jarvis_cf01" {
   web_acl_id = aws_wafv2_web_acl.cloudfront_waf.arn  # ← No separate association needed
   # ... other config ...
 }
@@ -311,28 +311,28 @@ rule {
 ```hcl
 # lab2_cloudfront_r53.tf (NEW FILE)
 
-# Apex domain: chewbacca-growl.com → CloudFront
+# Apex domain: jarvis-roar.com → CloudFront
 resource "aws_route53_record" "apex" {
   zone_id = var.route53_zone_id
   name    = var.domain_name
   type    = "A"
   
   alias {
-    name                   = aws_cloudfront_distribution.chewbacca_cf01.domain_name
-    zone_id                = aws_cloudfront_distribution.chewbacca_cf01.hosted_zone_id
+    name                   = aws_cloudfront_distribution.jarvis_cf01.domain_name
+    zone_id                = aws_cloudfront_distribution.jarvis_cf01.hosted_zone_id
     evaluate_target_health = false
   }
 }
 
-# App subdomain: app.chewbacca-growl.com → CloudFront
+# App subdomain: app.jarvis-roar.com → CloudFront
 resource "aws_route53_record" "app" {
   zone_id = var.route53_zone_id
   name    = "app.${var.domain_name}"
   type    = "A"
   
   alias {
-    name                   = aws_cloudfront_distribution.chewbacca_cf01.domain_name
-    zone_id                = aws_cloudfront_distribution.chewbacca_cf01.hosted_zone_id
+    name                   = aws_cloudfront_distribution.jarvis_cf01.domain_name
+    zone_id                = aws_cloudfront_distribution.jarvis_cf01.hosted_zone_id
     evaluate_target_health = false
   }
 }
@@ -344,8 +344,8 @@ resource "aws_route53_record" "apex_aaaa" {
   type    = "AAAA"
   
   alias {
-    name                   = aws_cloudfront_distribution.chewbacca_cf01.domain_name
-    zone_id                = aws_cloudfront_distribution.chewbacca_cf01.hosted_zone_id
+    name                   = aws_cloudfront_distribution.jarvis_cf01.domain_name
+    zone_id                = aws_cloudfront_distribution.jarvis_cf01.hosted_zone_id
     evaluate_target_health = false
   }
 }
@@ -440,7 +440,7 @@ data "aws_acm_certificate" "cloudfront_cert" {
 }
 
 # Use in CloudFront
-resource "aws_cloudfront_distribution" "chewbacca_cf01" {
+resource "aws_cloudfront_distribution" "jarvis_cf01" {
   viewer_certificate {
     acm_certificate_arn      = data.aws_acm_certificate.cloudfront_cert.arn
     ssl_support_method       = "sni-only"
@@ -501,7 +501,7 @@ terraform show | grep -A 20 "cloudfront_distribution"
 ```bash
 # Get ALB DNS name
 ALB_DNS=$(aws elbv2 describe-load-balancers \
-  --query 'LoadBalancers[?LoadBalancerName==`chewbacca-alb01`].DNSName' \
+  --query 'LoadBalancers[?LoadBalancerName==`jarvis-alb01`].DNSName' \
   --output text)
 
 # Try to access directly
@@ -509,21 +509,21 @@ curl -v https://$ALB_DNS 2>&1 | grep -E "(403|403 Forbidden)"
 
 # Expected output:
 # < HTTP/1.1 403 Forbidden
-# Reason: Missing X-Chewbacca-Growl header
+# Reason: Missing X-jarvis-roar header
 ```
 
 ### Test 2: CloudFront Access Should Succeed (200)
 
 ```bash
 # Test apex domain
-curl -I https://chewbacca-growl.com
+curl -I https://jarvis-roar.com
 
 # Expected output:
 # HTTP/1.1 200 OK
 # (or 301 if app redirects, then 200 on follow)
 
 # Test app subdomain
-curl -I https://app.chewbacca-growl.com
+curl -I https://app.jarvis-roar.com
 
 # Expected output:
 # HTTP/1.1 200 OK
@@ -533,16 +533,16 @@ curl -I https://app.chewbacca-growl.com
 
 ```bash
 # Check apex DNS
-dig chewbacca-growl.com A +short
+dig jarvis-roar.com A +short
 # Expected: CloudFront anycast IP (not ALB elastic IP)
 
 # Check app subdomain DNS
-dig app.chewbacca-growl.com A +short
+dig app.jarvis-roar.com A +short
 # Expected: Same CloudFront anycast IP
 
 # Verify CloudFront distribution ID
 aws cloudfront list-distributions \
-  --query 'DistributionList.Items[?Aliases.Items[0]==`chewbacca-growl.com`].Id' \
+  --query 'DistributionList.Items[?Aliases.Items[0]==`jarvis-roar.com`].Id' \
   --output text
 ```
 
@@ -568,13 +568,13 @@ aws cloudfront get-distribution \
 ```bash
 # Try to spoof origin header
 curl -v \
-  -H "X-Chewbacca-Growl: fake-value" \
+  -H "X-jarvis-roar: fake-value" \
   https://$ALB_DNS 2>&1 | grep -E "(403|403 Forbidden)"
 
 # Expected: 403 (because header value doesn't match)
 
 # Verify header is actually sent by CloudFront
-curl -v https://chewbacca-growl.com 2>&1 | grep -i "x-chewbacca"
+curl -v https://jarvis-roar.com 2>&1 | grep -i "x-jarvis"
 # (This may not show in curl output, but ALB logs will verify)
 ```
 
@@ -664,3 +664,4 @@ Internet → CloudFront + WAF (PCI-DSS requirement)
 **Document Version**: 1.0  
 **Lab 2 Focus**: CloudFront + Origin Cloaking + WAF Migration  
 **Prerequisites**: Lab 1a/1c infrastructure already deployed
+
