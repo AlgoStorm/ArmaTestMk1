@@ -136,7 +136,7 @@ Invalidating /* is reserved for emergencies due to its high cost and risk. It sh
 
 #### 1. First request (should be MISS)
 ```
-curl -i https://chewbacca-growl.com/api/public-feed | sed -n '1,20p'
+curl -i https://jarvis-roar.com/api/public-feed | sed -n '1,20p'
 ```
 Expected headers:
 ```
@@ -224,24 +224,25 @@ bonus_a_vpc_endpoints = {
 	"ssm" = "vpce-0729e5d3d8266f055"
 	"ssmmessages" = "vpce-005631b38b14d7cc6"
 }
-chrisbarm_alb_arn01 = "arn:aws:elasticloadbalancing:us-east-1:198547498722:loadbalancer/app/chrisbarm-alb01/c9549f0cda36ba91"
-chrisbarm_alb_dns_name01 = "chrisbarm-alb01-1147982951.us-east-1.elb.amazonaws.com"
-chrisbarm_http_listener_arn01 = "arn:aws:elasticloadbalancing:us-east-1:198547498722:listener/app/chrisbarm-alb01/c9549f0cda36ba91/032d9d366867ac35"
-chrisbarm_log_group_name = "/aws/ec2/chrisbarm-rds-app"
-chrisbarm_private_subnet_ids = [
+jarvis_alb_arn01 = "arn:aws:elasticloadbalancing:us-east-1:198547498722:loadbalancer/app/jarvis-alb01/c9549f0cda36ba91"
+jarvis_alb_dns_name01 = "jarvis-alb01-1147982951.us-east-1.elb.amazonaws.com"
+jarvis_http_listener_arn01 = "arn:aws:elasticloadbalancing:us-east-1:198547498722:listener/app/jarvis-alb01/c9549f0cda36ba91/032d9d366867ac35"
+jarvis_log_group_name = "/aws/ec2/jarvis-rds-app"
+jarvis_private_subnet_ids = [
 	"subnet-0a04c8671392e0074",
 	"subnet-05a7989e075e5fc1d",
 ]
-chrisbarm_public_subnet_ids = [
+jarvis_public_subnet_ids = [
 	"subnet-0c42249970450265d",
 	"subnet-044062461f0fd3b40",
 ]
-chrisbarm_rds_endpoint = "chrisbarm-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com"
-chrisbarm_sns_topic_arn = "arn:aws:sns:us-east-1:198547498722:chrisbarm-db-incidents"
-chrisbarm_target_group_arn01 = "arn:aws:elasticloadbalancing:us-east-1:198547498722:targetgroup/chrisbarm-tg01/5e78317173ac277c"
-chrisbarm_vpc_id = "vpc-02d1bb2cf2a2dafdf"
+jarvis_rds_endpoint = "jarvis-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com"
+jarvis_sns_topic_arn = "arn:aws:sns:us-east-1:198547498722:jarvis-db-incidents"
+jarvis_target_group_arn01 = "arn:aws:elasticloadbalancing:us-east-1:198547498722:targetgroup/jarvis-tg01/5e78317173ac277c"
+jarvis_vpc_id = "vpc-02d1bb2cf2a2dafdf"
 db_connection_alarm_name = "lab-db-connection-failure"
 db_incidents_topic_arn = "arn:aws:sns:us-east-1:198547498722:lab-db-incidents"
 db_incidents_topic_name = "lab-db-incidents"
-log_group_name = "/aws/ec2/chrisbarm-rds-app"
+log_group_name = "/aws/ec2/jarvis-rds-app"
 ```
+
