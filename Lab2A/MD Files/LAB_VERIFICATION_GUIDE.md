@@ -9,30 +9,30 @@ Your EC2 → RDS infrastructure is **DEPLOYED AND CONFIGURED**. This document pr
 ## Infrastructure Components Deployed
 
 ### 1. Networking
-- **VPC**: `chrisbarm-vpc01` (10.0.0.0/16)
+- **VPC**: `jarvis-vpc01` (10.0.0.0/16)
 - **Public Subnets**: 
-  - `chrisbarm-public-subnet01` (10.0.1.0/24) in us-east-1a
-  - `chrisbarm-public-subnet02` (10.0.2.0/24) in us-east-1b
+  - `jarvis-public-subnet01` (10.0.1.0/24) in us-east-1a
+  - `jarvis-public-subnet02` (10.0.2.0/24) in us-east-1b
 - **Private Subnets**:
-  - `chrisbarm-private-subnet01` (10.0.101.0/24) in us-east-1a
-  - `chrisbarm-private-subnet02` (10.0.102.0/24) in us-east-1b
-- **Internet Gateway**: `chrisbarm-igw01`
-- **NAT Gateway**: `chrisbarm-nat01` (allows private subnets to access internet)
+  - `jarvis-private-subnet01` (10.0.101.0/24) in us-east-1a
+  - `jarvis-private-subnet02` (10.0.102.0/24) in us-east-1b
+- **Internet Gateway**: `jarvis-igw01`
+- **NAT Gateway**: `jarvis-nat01` (allows private subnets to access internet)
 
 ### 2. Compute Layer
-- **EC2 Instance**: `chrisbarm-ec2_01`
+- **EC2 Instance**: `jarvis-ec2_01`
   - Instance ID: `i-061b663d2d9d6ff80`
   - Instance Type: `t3.micro`
   - Public IP: `54.91.122.42`
   - Subnet: Public (us-east-1a)
   - AMI: Ubuntu 22.04 LTS
-  - IAM Role: `chrisbarm-ec2-role01` (with Secrets Manager access)
+  - IAM Role: `jarvis-ec2-role01` (with Secrets Manager access)
 
 ### 3. Database Layer
-- **RDS Instance**: `chrisbarm-rds01`
+- **RDS Instance**: `jarvis-rds01`
   - Engine: MySQL 8.0
   - Instance Class: `db.t3.micro`
-  - Endpoint: `chrisbarm-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com:3306`
+  - Endpoint: `jarvis-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com:3306`
   - Database: `labdb`
   - Storage: 20 GB (gp3)
   - **NOT publicly accessible** (private subnet only)
@@ -40,16 +40,16 @@ Your EC2 → RDS infrastructure is **DEPLOYED AND CONFIGURED**. This document pr
 
 ### 4. Security
 #### Security Groups
-- **EC2 Security Group** (`chrisbarm-ec2-sg01`):
+- **EC2 Security Group** (`jarvis-ec2-sg01`):
   - Inbound: HTTP (80) from anywhere (0.0.0.0/0)
   - Outbound: All traffic
   
-- **RDS Security Group** (`chrisbarm-rds-sg01`):
+- **RDS Security Group** (`jarvis-rds-sg01`):
   - Inbound: MySQL (3306) **ONLY from EC2 security group** (least privilege)
   - Outbound: None needed (RDS is receive-only)
 
 #### IAM Role & Policies
-- **Role**: `chrisbarm-ec2-role01`
+- **Role**: `jarvis-ec2-role01`
   - Assume Role Policy: EC2 service
   - Attached Policies:
     - `AmazonSSMManagedInstanceCore` (for EC2 Instance Connect)
@@ -64,7 +64,7 @@ Your EC2 → RDS infrastructure is **DEPLOYED AND CONFIGURED**. This document pr
   {
     "username": "admin",
     "password": "<RDS_MASTER_PASSWORD>",
-    "host": "chrisbarm-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com",
+    "host": "jarvis-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com",
     "port": 3306,
     "dbname": "labdb"
   }
@@ -85,7 +85,7 @@ Your EC2 → RDS infrastructure is **DEPLOYED AND CONFIGURED**. This document pr
 ```bash
 # Get Instance ID and state
 aws ec2 describe-instances \
-  --filters "Name=tag:Name,Values=chrisbarm-ec2_01" \
+  --filters "Name=tag:Name,Values=jarvis-ec2_01" \
   --region us-east-1 \
   --query "Reservations[].Instances[].[InstanceId,State.Name,PublicIpAddress]"
 ```
@@ -118,7 +118,7 @@ aws ec2 describe-instances \
 **Expected Output**:
 ```
 [
-    "arn:aws:iam::198547498722:instance-profile/chrisbarm-instance-profile01"
+    "arn:aws:iam::198547498722:instance-profile/jarvis-instance-profile01"
 ]
 ```
 
@@ -133,7 +133,7 @@ aws ec2 describe-instances \
 ```bash
 # Check RDS status
 aws rds describe-db-instances \
-  --db-instance-identifier chrisbarm-rds01 \
+  --db-instance-identifier jarvis-rds01 \
   --region us-east-1 \
   --query "DBInstances[0].DBInstanceStatus"
 ```
@@ -152,7 +152,7 @@ available
 ```bash
 # Get RDS endpoint and port
 aws rds describe-db-instances \
-  --db-instance-identifier chrisbarm-rds01 \
+  --db-instance-identifier jarvis-rds01 \
   --region us-east-1 \
   --query "DBInstances[0].Endpoint"
 ```
@@ -160,7 +160,7 @@ aws rds describe-db-instances \
 **Expected Output**:
 ```json
 {
-    "Address": "chrisbarm-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com",
+    "Address": "jarvis-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com",
     "Port": 3306
 }
 ```
@@ -176,7 +176,7 @@ aws rds describe-db-instances \
 ```bash
 # Get RDS security group rules
 aws ec2 describe-security-groups \
-  --filters "Name=group-name,Values=chrisbarm-rds-sg01" \
+  --filters "Name=group-name,Values=jarvis-rds-sg01" \
   --region us-east-1 \
   --query "SecurityGroups[0].IpPermissions"
 ```
@@ -229,7 +229,7 @@ aws secretsmanager get-secret-value \
     "ARN": "arn:aws:secretsmanager:us-east-1:198547498722:secret:lab1a/rds/mysql-QBaVbS",
     "Name": "lab1a/rds/mysql",
     "VersionId": "...",
-    "SecretString": "{\"username\":\"admin\",\"password\":\"...\",\"host\":\"chrisbarm-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com\",\"port\":3306,\"dbname\":\"labdb\"}",
+    "SecretString": "{\"username\":\"admin\",\"password\":\"...\",\"host\":\"jarvis-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com\",\"port\":3306,\"dbname\":\"labdb\"}",
     "CreatedDate": ...
 }
 ```
@@ -254,7 +254,7 @@ sudo dnf install -y mysql  # Amazon Linux 2
 sudo apt-get install -y mysql-client  # Ubuntu
 
 # Connect to RDS using endpoint
-mysql -h chrisbarm-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com \
+mysql -h jarvis-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com \
        -u admin \
        -p<PASSWORD> \
        labdb
@@ -385,7 +385,7 @@ curl http://54.91.122.42/list
 3. Can EC2 ping the RDS endpoint?
    ```bash
    # From EC2 instance:
-   ping chrisbarm-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com
+   ping jarvis-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com
    ```
 
 **Root Cause**: Almost always a security group issue - verify source SG is correctly referenced
@@ -401,7 +401,7 @@ curl http://54.91.122.42/list
 2. Does role have secrets_policy attached?
    ```bash
    aws iam list-attached-role-policies \
-     --role-name chrisbarm-ec2-role01
+     --role-name jarvis-ec2-role01
    ```
 3. Does the policy allow the correct secret ARN?
 
@@ -489,7 +489,8 @@ For grading, provide:
 
 ---
 
-**Lab Created By**: Chrisbarm  
+**Lab Created By**: jarvis  
 **Date**: January 20, 2026  
 **Region**: us-east-1  
 **Account**: 198547498722
+
