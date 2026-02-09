@@ -33,7 +33,7 @@ terraform apply
 sleep 180  # SSM agent registration
 
 # 3. Verify
-bash verify_bonus_a_comprehensive.sh $(terraform output -raw bonus_a_instance_id) $(terraform output -raw chrisbarm_vpc_id | tr -d '"')
+bash verify_bonus_a_comprehensive.sh $(terraform output -raw bonus_a_instance_id) $(terraform output -raw jarvis_vpc_id | tr -d '"')
 
 # ✅ All checks pass!
 ```
@@ -350,3 +350,4 @@ This is a complete, production-ready implementation. Everything you need is docu
 **Version**: 1.0
 
 *Welcome to Bonus A. Let's build secure infrastructure.* 🛡️
+
