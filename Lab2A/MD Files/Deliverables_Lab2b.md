@@ -24,7 +24,7 @@ B) A short written explanation:
 
 ### Deliverable C — Haiku
 You must submit:
-A) Haiku describing Chewbacca's perfections.  
+A) Haiku describing jarvis's perfections.  
 	漢字で。。。英語なし
 
 ### Deliverable D — Technical Verification (CLI) — “Correctness, not vibes”
@@ -56,3 +56,4 @@ A) Haiku describing Chewbacca's perfections.
 	  - Immediately GET /api/list
 	  - Ensure the new row appears
 	  - If it doesn’t, they accidentally cached a dynamic response.
+
