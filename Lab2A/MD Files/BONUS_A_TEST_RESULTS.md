@@ -1,7 +1,7 @@
 # Bonus-A Verification Test Results
 **Date:** January 21, 2026  
 **Deployment Time:** ~5 minutes  
-**Instance ID:** i-08070fd0a79861017  
+**Instance ID:** i-08070fd0a7635516547  
 **VPC ID:** vpc-09c7ed4d2bac4273a  
 **Region:** us-east-1
 
@@ -208,7 +208,7 @@ bash verify_bonus_a_5_cloudwatch_logs.sh "/aws/ec2/bonus-a-rds-app" us-east-1
 - VPC endpoints available
 - Expected to complete in 2-3 minutes
 
-**í¾¯ Ready for:**
+**ï¿½ï¿½ï¿½ Ready for:**
 - Session Manager access (once agent registers)
 - Config store testing
 - CloudWatch logging
@@ -246,4 +246,5 @@ Points Earned: 35/90 base (38.9%)
 
 **Estimated Complete Time:** 5-10 minutes from now  
 (Once SSM agent registers and tests 3-5 complete)
+
 
