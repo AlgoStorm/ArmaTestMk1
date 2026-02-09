@@ -6,7 +6,7 @@
   "checks": {
     "rds_instance_exists": {
       "status": "pass",
-      "details": "DB ID: chrisbarm-rds01"
+      "details": "DB ID: JarvisStark-rds01"
     },
     "rds_not_publicly_accessible": {
       "status": "pass",
@@ -14,15 +14,15 @@
     },
     "rds_has_security_group": {
       "status": "pass",
-      "details": "Security Groups: sg-00c4a42158a0e217e\r "
+      "details": "Security Groups: sg-00c4a78558a0e247e\r "
     },
     "vpcs_same": {
       "status": "pass",
-      "details": "Both in VPC: vpc-02709f3087724afb0"
+      "details": "Both in VPC: vpc-02709f7756724afb0"
     },
     "rds_sg_to_sg_rule_exists": {
       "status": "pass",
-      "details": "EC2 SG sg-09ab009d3d15bf0b1 has ingress to RDS SG sg-00c4a42158a0e217e"
+      "details": "EC2 SG sg-09ab8784iu4ebf0b1 has ingress to RDS SG sg-00c4a42874ye217e"
     },
     "rds_port_identified": {
       "status": "pass",
@@ -34,3 +34,4 @@
     }
   }
 }
+
