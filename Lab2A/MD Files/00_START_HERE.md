@@ -8,7 +8,7 @@
 
 ### ✅ Infrastructure (100% Complete)
 - VPC with 2 public + 2 private subnets across 2 AZs
-- EC2 instance (`i-06684632636ff80`) with public IP `53.92.112.32`
+- EC2 instance (`i-021635136ff80`) with public IP `53.92.212.33`
 - RDS MySQL instance (`jarvis-rds01`) in private subnets
 - Security groups with least-privilege rules (RDS only from EC2)
 - IAM role (`jarvis-ec2-role01`) for EC2
@@ -43,7 +43,7 @@
 
 ### Immediate (Next 5 minutes)
 ```bash
-cd "C:/Users/caspe/Documents/TheoWAF/class7/Armageddon/jarvis01/terraform_restart_fixed"
+cd "C:/Users/bmarq/Documents/TheoWAF/class7/Armageddon/jarvis01/terraform_restart_fixed"
 # Read the current status
 cat DEPLOYMENT_SUMMARY.md
 ```
@@ -301,3 +301,4 @@ By completing this lab, you'll understand:
 **Next Action**: Wait 2-5 minutes, then run verification  
 
 🎉 **Congratulations! Your EC2 → RDS lab is fully deployed!** 🎉
+
