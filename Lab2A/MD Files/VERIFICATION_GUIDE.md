@@ -12,7 +12,7 @@ This guide provides step-by-step instructions to verify all 10 tests from your r
 export REGION="us-east-1"
 export INSTANCE_ID="i-0968fd41f8aaa43eb"
 export SECRET_ID="lab1a/rds/mysql"
-export EXPECTED_ROLE_NAME="chrisbarm-ec2-role01"
+export EXPECTED_ROLE_NAME="jarvis-ec2-role01"
 ```
 
 ---
@@ -49,7 +49,7 @@ aws ec2 describe-instances \
 ```
 
 **Current Status:** ✓ PASS  
-**Output:** `arn:aws:iam::198547498722:instance-profile/chrisbarm-instance-profile01`
+**Output:** `arn:aws:iam::198547498722:instance-profile/jarvis-instance-profile01`
 
 ---
 
@@ -68,7 +68,7 @@ PROFILE_NAME="$(aws ec2 describe-instances \
 ```
 
 **Current Status:** ✓ PASS  
-**Extracted Value:** `chrisbarm-instance-profile01`
+**Extracted Value:** `jarvis-instance-profile01`
 
 ---
 
@@ -86,7 +86,7 @@ ROLE_NAME="$(aws iam get-instance-profile \
 ```
 
 **Current Status:** ✓ PASS  
-**Resolved Role:** `chrisbarm-ec2-role01`
+**Resolved Role:** `jarvis-ec2-role01`
 
 ---
 
@@ -134,7 +134,7 @@ ssh -i <your-key.pem> ec2-user@<instance-public-ip>
 **Run inside EC2:**
 
 ```bash
-ROLE_NAME="chrisbarm-ec2-role01"
+ROLE_NAME="jarvis-ec2-role01"
 aws sts get-caller-identity \
   --query "Arn" --output text 2>/dev/null \
   | grep -q ":assumed-role/$ROLE_NAME/" \
@@ -144,8 +144,8 @@ aws sts get-caller-identity \
 
 **Expected Output:**
 ```
-✓ PASS: running as expected role (chrisbarm-ec2-role01)
-Current ARN: arn:aws:sts::198547498722:assumed-role/chrisbarm-ec2-role01/i-0968fd41f8aaa43eb
+✓ PASS: running as expected role (jarvis-ec2-role01)
+Current ARN: arn:aws:sts::198547498722:assumed-role/jarvis-ec2-role01/i-0968fd41f8aaa43eb
 ```
 
 ---
@@ -201,9 +201,9 @@ aws secretsmanager get-secret-value \
 {
   "username": "admin",
   "password": "your-password-here",
-  "host": "chrisbarm-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com",
+  "host": "jarvis-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com",
   "port": 3306,
-  "dbname": "chrisbarm"
+  "dbname": "jarvis"
 }
 ```
 
@@ -268,7 +268,7 @@ bash verify_secrets_and_iam.sh
 ```bash
 # Copy script to EC2 first, or run commands individually
 REGION="us-east-1" \
-EXPECTED_ROLE_NAME="chrisbarm-ec2-role01" \
+EXPECTED_ROLE_NAME="jarvis-ec2-role01" \
 SECRET_ID="lab1a/rds/mysql" \
 bash verify_ec2_secrets_access.sh
 ```
@@ -280,9 +280,9 @@ bash verify_ec2_secrets_access.sh
 | Test | Type | Location | Status | Details |
 |------|------|----------|--------|---------|
 | 1 | Secret exists | Offline | ✓ PASS | Secret `lab1a/rds/mysql` found |
-| 2 | EC2 has IAM profile | Offline | ✓ PASS | Profile ARN: `arn:aws:iam::198547498722:instance-profile/chrisbarm-instance-profile01` |
-| 3 | Extract profile name | Offline | ✓ PASS | Profile: `chrisbarm-instance-profile01` |
-| 4 | Resolve role name | Offline | ✓ PASS | Role: `chrisbarm-ec2-role01` |
+| 2 | EC2 has IAM profile | Offline | ✓ PASS | Profile ARN: `arn:aws:iam::198547498722:instance-profile/jarvis-instance-profile01` |
+| 3 | Extract profile name | Offline | ✓ PASS | Profile: `jarvis-instance-profile01` |
+| 4 | Resolve role name | Offline | ✓ PASS | Role: `jarvis-ec2-role01` |
 | 5 | Role has Secrets policy | Offline | ✓ PASS | Policy: `secrets_policy` attached |
 | 6 | EC2 assumes role | EC2-Side | ⏳ PENDING | Verify inside EC2 |
 | 7 | Role can describe secret | EC2-Side | ⏳ PENDING | Verify inside EC2 |
@@ -318,3 +318,4 @@ bash verify_ec2_secrets_access.sh
 3. ✅ Run tests 6-8 inside EC2
 4. ✅ Verify all tests pass
 5. ✅ Ready for lab grading!
+
