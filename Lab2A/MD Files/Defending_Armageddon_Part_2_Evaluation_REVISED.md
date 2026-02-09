@@ -394,7 +394,7 @@ An **observability and incident response system** that detects failures automati
 **Pattern 1: CloudWatch Log Group**
 ```terraform
 data "aws_cloudwatch_log_group" "app_logs" {
-  name = "/aws/ec2/chrisbarm-rds-app"
+  name = "/aws/ec2/jarvis-rds-app"
 }
 ```
 
@@ -491,7 +491,7 @@ aws ec2 revoke-security-group-ingress \
 # Result: All connection attempts fail
 
 # Stop the RDS instance
-aws rds stop-db-instance --db-instance-identifier chrisbarm-rds01
+aws rds stop-db-instance --db-instance-identifier jarvis-rds01
 
 # Application cannot connect → errors logged → alarm triggers
 ```
@@ -506,7 +506,7 @@ CURRENT=$(aws secretsmanager get-secret-value --secret-id lab1a/rds/mysql | jq .
 # 2. Compare with RDS password
 # 3. If mismatch, update RDS password to match secret
 aws rds modify-db-instance \
-  --db-instance-identifier chrisbarm-rds01 \
+  --db-instance-identifier jarvis-rds01 \
   --master-user-password $(echo $CURRENT | jq -r .password) \
   --apply-immediately
 
@@ -528,7 +528,7 @@ aws rds modify-db-instance \
 aws cloudwatch describe-alarms --alarm-names lab-db-connection-failure
 
 # Step 2: Check application logs
-aws logs tail /aws/ec2/chrisbarm-rds-app --follow
+aws logs tail /aws/ec2/jarvis-rds-app --follow
 
 # Step 3: Classify failure type (A, B, or C based on error message)
 
@@ -678,7 +678,7 @@ resource "aws_cloudfront_distribution" "main" {
     
     # Add secret header to all origin requests
     custom_header {
-      name  = "X-Chewbacca-Growl"
+      name  = "X-jarvis-roar"
       value = random_password.secret_value.result  # 32-char random
     }
   }
@@ -773,7 +773,7 @@ resource "aws_lb_listener_rule" "require_secret_header" {
   
   condition {
     http_header {
-      http_header_name = "X-Chewbacca-Growl"
+      http_header_name = "X-jarvis-roar"
       values           = [random_password.secret_origin_value.result]
     }
   }
@@ -867,7 +867,7 @@ resource "aws_wafv2_web_acl" "cloudfront_waf" {
 ```terraform
 resource "aws_route53_record" "apex" {
   zone_id = aws_route53_zone.main.zone_id
-  name    = "chewbacca-growl.com"
+  name    = "jarvis-roar.com"
   type    = "A"
   
   alias {
@@ -878,7 +878,7 @@ resource "aws_route53_record" "apex" {
 }
 
 # Points domain to CloudFront, not ALB
-# Users see: chewbacca-growl.com → CloudFront
+# Users see: jarvis-roar.com → CloudFront
 # Attackers trying to find origin: ❌ only see CloudFront IP
 ```
 
@@ -1354,10 +1354,10 @@ resource "aws_iam_role_policy" "session_manager" {
 - `verify_lab2_complete.sh` - CloudFront, WAF, origin cloaking
 
 **Security Testing Tools:**
-- `malgus_cli.py` - Infrastructure management CLI
-- `malgus_cloudfront_cache_probe.py` - Cache behavior testing
-- `malgus_origin_cloak_tester.py` - Origin protection validation
-- `malgus_waf_block_spike_detector.py` - WAF effectiveness testing
+- `jarvis_cli.py` - Infrastructure management CLI
+- `jarvis_cloudfront_cache_probe.py` - Cache behavior testing
+- `jarvis_origin_cloak_tester.py` - Origin protection validation
+- `jarvis_waf_block_spike_detector.py` - WAF effectiveness testing
 
 ---
 
@@ -1441,4 +1441,5 @@ resource "aws_iam_role_policy" "session_manager" {
 5. **Least Privilege:** Why scoped IAM policies limit blast radius (Netflix model)
 
 ---
+
 
