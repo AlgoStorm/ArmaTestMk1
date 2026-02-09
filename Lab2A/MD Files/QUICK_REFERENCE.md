@@ -5,7 +5,7 @@
 ```bash
 # Get EC2 instance information
 aws ec2 describe-instances \
-  --filters "Name=tag:Name,Values=chrisbarm-ec2_01" \
+  --filters "Name=tag:Name,Values=jarvis-ec2_01" \
   --region us-east-1 \
   --query "Reservations[].Instances[].[InstanceId,PublicIpAddress,State.Name]" \
   --output text
@@ -17,13 +17,13 @@ aws ec2 describe-instances \
 ```bash
 # Get RDS endpoint
 aws rds describe-db-instances \
-  --db-instance-identifier chrisbarm-rds01 \
+  --db-instance-identifier jarvis-rds01 \
   --region us-east-1 \
   --query "DBInstances[0].Endpoint" \
   --output text
 
 # Example output:
-# chrisbarm-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com:3306
+# jarvis-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com:3306
 ```
 
 ## Verification Commands (From Lab Requirements)
@@ -32,7 +32,7 @@ aws rds describe-db-instances \
 
 ```bash
 aws ec2 describe-instances \
-  --filters "Name=tag:Name,Values=chrisbarm-ec2_01" \
+  --filters "Name=tag:Name,Values=jarvis-ec2_01" \
   --region us-east-1 \
   --query "Reservations[].Instances[].[InstanceId,State.Name]"
 ```
@@ -50,7 +50,7 @@ aws ec2 describe-instances \
 
 ```bash
 aws rds describe-db-instances \
-  --db-instance-identifier chrisbarm-rds01 \
+  --db-instance-identifier jarvis-rds01 \
   --region us-east-1 \
   --query "DBInstances[0].DBInstanceStatus"
 ```
@@ -59,7 +59,7 @@ aws rds describe-db-instances \
 
 ```bash
 aws rds describe-db-instances \
-  --db-instance-identifier chrisbarm-rds01 \
+  --db-instance-identifier jarvis-rds01 \
   --region us-east-1 \
   --query "DBInstances[0].Endpoint"
 ```
@@ -69,14 +69,14 @@ aws rds describe-db-instances \
 ```bash
 # Get RDS security group
 RDS_SG=$(aws ec2 describe-security-groups \
-  --filters "Name=group-name,Values=chrisbarm-rds-sg01" \
+  --filters "Name=group-name,Values=jarvis-rds-sg01" \
   --region us-east-1 \
   --query "SecurityGroups[0].GroupId" \
   --output text)
 
 # Get EC2 security group
 EC2_SG=$(aws ec2 describe-security-groups \
-  --filters "Name=group-name,Values=chrisbarm-ec2-sg01" \
+  --filters "Name=group-name,Values=jarvis-ec2-sg01" \
   --region us-east-1 \
   --query "SecurityGroups[0].GroupId" \
   --output text)
@@ -131,7 +131,7 @@ mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" -e "SHOW TABLES;"
 ```bash
 # Get EC2 public IP
 EC2_IP=$(aws ec2 describe-instances \
-  --filters "Name=tag:Name,Values=chrisbarm-ec2_01" \
+  --filters "Name=tag:Name,Values=jarvis-ec2_01" \
   --region us-east-1 \
   --query "Reservations[].Instances[0].PublicIpAddress" \
   --output text)
@@ -162,31 +162,31 @@ terraform apply
 
 # See current state
 terraform state list
-terraform state show aws_instance.chrisbarm_ec2_01
-terraform state show aws_db_instance.chrisbarm_rds01
+terraform state show aws_instance.jarvis_ec2_01
+terraform state show aws_db_instance.jarvis_rds01
 
 # Refresh state from AWS
 terraform refresh
 
 # Get outputs
 terraform output
-terraform output -raw chrisbarm_rds_endpoint
+terraform output -raw jarvis_rds_endpoint
 ```
 
 ## Useful One-Liners
 
 ```bash
 # Get EC2 public IP quickly
-aws ec2 describe-instances --filters "Name=tag:Name,Values=chrisbarm-ec2_01" --region us-east-1 --query "Reservations[0].Instances[0].PublicIpAddress" --output text
+aws ec2 describe-instances --filters "Name=tag:Name,Values=jarvis-ec2_01" --region us-east-1 --query "Reservations[0].Instances[0].PublicIpAddress" --output text
 
 # Get RDS endpoint quickly
-aws rds describe-db-instances --db-instance-identifier chrisbarm-rds01 --region us-east-1 --query "DBInstances[0].Endpoint.Address" --output text
+aws rds describe-db-instances --db-instance-identifier jarvis-rds01 --region us-east-1 --query "DBInstances[0].Endpoint.Address" --output text
 
 # Get current RDS status
-aws rds describe-db-instances --db-instance-identifier chrisbarm-rds01 --region us-east-1 --query "DBInstances[0].DBInstanceStatus" --output text
+aws rds describe-db-instances --db-instance-identifier jarvis-rds01 --region us-east-1 --query "DBInstances[0].DBInstanceStatus" --output text
 
 # Check if RDS is publicly accessible (should be False!)
-aws rds describe-db-instances --db-instance-identifier chrisbarm-rds01 --region us-east-1 --query "DBInstances[0].PubliclyAccessible" --output text
+aws rds describe-db-instances --db-instance-identifier jarvis-rds01 --region us-east-1 --query "DBInstances[0].PubliclyAccessible" --output text
 
 # List all resources in Terraform state
 terraform state list | sort
@@ -206,7 +206,7 @@ ps aux | grep python
 netstat -tuln | grep 80  # or: ss -tuln | grep 80
 
 # Test network connectivity to RDS from EC2
-nc -zv chrisbarm-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com 3306
+nc -zv jarvis-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com 3306
 
 # Check security group rules
 aws ec2 describe-security-group-rules \
@@ -224,7 +224,7 @@ aws ec2 describe-security-group-rules \
 
 echo "1. Checking EC2..."
 aws ec2 describe-instances \
-  --filters "Name=tag:Name,Values=chrisbarm-ec2_01" \
+  --filters "Name=tag:Name,Values=jarvis-ec2_01" \
   --region us-east-1 \
   --query "Reservations[].Instances[].[InstanceId,State.Name,PublicIpAddress]" \
   --output table
@@ -232,7 +232,7 @@ aws ec2 describe-instances \
 echo ""
 echo "2. Checking RDS..."
 aws rds describe-db-instances \
-  --db-instance-identifier chrisbarm-rds01 \
+  --db-instance-identifier jarvis-rds01 \
   --region us-east-1 \
   --query "DBInstances[].[DBInstanceIdentifier,DBInstanceStatus,Endpoint.Address]" \
   --output table
@@ -255,7 +255,7 @@ aws secretsmanager get-secret-value \
 echo ""
 echo "5. Checking Security Groups..."
 aws ec2 describe-security-groups \
-  --filters "Name=group-name,Values=chrisbarm-rds-sg01" \
+  --filters "Name=group-name,Values=jarvis-rds-sg01" \
   --region us-east-1 \
   --query "SecurityGroups[0].IpPermissions" \
   --output table
@@ -300,7 +300,7 @@ aws secretsmanager get-secret-value --secret-id lab1a/rds/mysql
 {
   "username": "admin",
   "password": "<PASSWORD>",
-  "host": "chrisbarm-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com",
+  "host": "jarvis-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com",
   "port": 3306,
   "dbname": "labdb"
 }
@@ -310,9 +310,9 @@ aws secretsmanager get-secret-value --secret-id lab1a/rds/mysql
 
 ```bash
 # One command to check everything
-(echo "EC2:" && aws ec2 describe-instances --filters "Name=tag:Name,Values=chrisbarm-ec2_01" --region us-east-1 --query "Reservations[0].Instances[0].[InstanceId,State.Name,PublicIpAddress]" --output text) && \
-(echo "RDS:" && aws rds describe-db-instances --db-instance-identifier chrisbarm-rds01 --region us-east-1 --query "DBInstances[0].[DBInstanceStatus,Endpoint.Address]" --output text) && \
-(echo "App:" && curl -s http://$(aws ec2 describe-instances --filters "Name=tag:Name,Values=chrisbarm-ec2_01" --region us-east-1 --query "Reservations[0].Instances[0].PublicIpAddress" --output text)/ | jq -r '.status')
+(echo "EC2:" && aws ec2 describe-instances --filters "Name=tag:Name,Values=jarvis-ec2_01" --region us-east-1 --query "Reservations[0].Instances[0].[InstanceId,State.Name,PublicIpAddress]" --output text) && \
+(echo "RDS:" && aws rds describe-db-instances --db-instance-identifier jarvis-rds01 --region us-east-1 --query "DBInstances[0].[DBInstanceStatus,Endpoint.Address]" --output text) && \
+(echo "App:" && curl -s http://$(aws ec2 describe-instances --filters "Name=tag:Name,Values=jarvis-ec2_01" --region us-east-1 --query "Reservations[0].Instances[0].PublicIpAddress" --output text)/ | jq -r '.status')
 ```
 
 ---
@@ -322,12 +322,12 @@ aws secretsmanager get-secret-value --secret-id lab1a/rds/mysql
 | Variable | Value |
 |----------|-------|
 | Region | us-east-1 |
-| Project Name | chrisbarm |
+| Project Name | jarvis |
 | VPC CIDR | 10.0.0.0/16 |
 | EC2 Instance ID | i-061b663d2d9d6ff80 |
 | EC2 Public IP | 54.91.122.42 |
-| RDS Identifier | chrisbarm-rds01 |
-| RDS Endpoint | chrisbarm-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com |
+| RDS Identifier | jarvis-rds01 |
+| RDS Endpoint | jarvis-rds01.c4x68420cyvy.us-east-1.rds.amazonaws.com |
 | DB Name | labdb |
 | DB User | admin |
 | Secret ID | lab1a/rds/mysql |
@@ -336,3 +336,4 @@ aws secretsmanager get-secret-value --secret-id lab1a/rds/mysql
 ---
 
 **Remember**: Save these commands for future reference!
+
