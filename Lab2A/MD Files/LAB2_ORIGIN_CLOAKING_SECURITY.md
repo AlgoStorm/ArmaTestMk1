@@ -13,18 +13,18 @@ Goal: All internet traffic MUST flow through CloudFront. Direct ALB access = **4
 ### Layer 1: IP Restriction (AWS Managed Prefix List)
 
 ```hcl
-data "aws_ec2_managed_prefix_list" "chewbacca_cf_origin_facing01" {
+data "aws_ec2_managed_prefix_list" "jarvis_cf_origin_facing01" {
   name = "com.amazonaws.global.cloudfront.origin-facing"
 }
 
-resource "aws_security_group_rule" "chewbacca_alb_ingress_cf44301" {
+resource "aws_security_group_rule" "jarvis_alb_ingress_cf44301" {
   type              = "ingress"
-  security_group_id = aws_security_group.chewbacca_alb_sg01.id
+  security_group_id = aws_security_group.jarvis_alb_sg01.id
   from_port         = 443
   to_port           = 443
   protocol          = "tcp"
   prefix_list_ids   = [
-    data.aws_ec2_managed_prefix_list.chewbacca_cf_origin_facing01.id
+    data.aws_ec2_managed_prefix_list.jarvis_cf_origin_facing01.id
   ]
 }
 ```
@@ -74,24 +74,24 @@ Request from 203.0.113.50 (random attacker)
 ### Layer 2: Custom Header Validation (Secret Handshake)
 
 ```hcl
-resource "random_password" "chewbacca_origin_header_value01" {
+resource "random_password" "jarvis_origin_header_value01" {
   length  = 32
   special = false
 }
 
-resource "aws_lb_listener_rule" "chewbacca_require_origin_header01" {
-  listener_arn = aws_lb_listener.chewbacca_https_listener01.arn
+resource "aws_lb_listener_rule" "jarvis_require_origin_header01" {
+  listener_arn = aws_lb_listener.jarvis_https_listener01.arn
   priority     = 10
 
   action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.chewbacca_tg01.arn
+    target_group_arn = aws_lb_target_group.jarvis_tg01.arn
   }
 
   condition {
     http_header {
-      http_header_name = "X-Chewbacca-Growl"
-      values           = [random_password.chewbacca_origin_header_value01.result]
+      http_header_name = "X-jarvis-Growl"
+      values           = [random_password.jarvis_origin_header_value01.result]
     }
   }
 }
@@ -125,13 +125,13 @@ Attack 2: Spoof CloudFront IP (more sophisticated)
   curl -H "X-Forwarded-For: 52.84.50.100" \
        https://alb-123.us-east-1.elb.amazonaws.com
   ├─ Security group allows? YES (IP appears to be CloudFront)
-  ├─ Header validation: "X-Chewbacca-Growl: ???"
+  ├─ Header validation: "X-jarvis-Growl: ???"
   ├─ Attacker doesn't have secret (stored in Terraform state, not public)
   └─ Result: ALB returns 403 Forbidden
 
 Attack 3: Brute-force secret (infeasible)
   for i in {1..1000000}; do
-    curl -H "X-Chewbacca-Growl: secret$i" https://alb-dns
+    curl -H "X-jarvis-Growl: secret$i" https://alb-dns
   done
   ├─ Secret is 32 random characters (32! = 263,130,836,933,693,900,000,000,000,000,000 combinations)
   ├─ Even at 1M requests/second: takes 8 * 10^24 seconds
@@ -143,8 +143,8 @@ Attack 3: Brute-force secret (infeasible)
 ### Layer 3: Catch-All 403 Block (Default Deny)
 
 ```hcl
-resource "aws_lb_listener_rule" "chewbacca_default_block01" {
-  listener_arn = aws_lb_listener.chewbacca_https_listener01.arn
+resource "aws_lb_listener_rule" "jarvis_default_block01" {
+  listener_arn = aws_lb_listener.jarvis_https_listener01.arn
   priority     = 100  # ← LOWER precedence than priority 10
 
   action {
@@ -263,9 +263,9 @@ Layer 1 Defense (IP Restriction):
 
 But Layer 2 Defense activates (Header Validation):
   ├─ Request arrives at ALB listener
-  ├─ ALB checks priority 10 rule: "Does it have X-Chewbacca-Growl header?"
+  ├─ ALB checks priority 10 rule: "Does it have X-jarvis-Growl header?"
   ├─ Request has: Host, User-Agent, etc. (from curl)
-  ├─ Request does NOT have: X-Chewbacca-Growl: <32-char-secret>
+  ├─ Request does NOT have: X-jarvis-Growl: <32-char-secret>
   ├─ Priority 10 rule doesn't match
   ├─ Check priority 100 rule: Match everything else? YES
   └─ Return 403 Forbidden ✅
@@ -298,9 +298,9 @@ Layer 1 Defense (IP Restriction):
   └─ Continue to application layer
 
 Layer 2 Defense (Header Validation):
-  ├─ ALB checks: "Does request have X-Chewbacca-Growl header?"
+  ├─ ALB checks: "Does request have X-jarvis-Growl header?"
   ├─ Attacker added: X-Forwarded-For: 52.84.50.100
-  ├─ But did NOT add: X-Chewbacca-Growl: <32-char-secret>
+  ├─ But did NOT add: X-jarvis-Growl: <32-char-secret>
   ├─ Priority 10 rule doesn't match
   ├─ Priority 100 rule matches: Return 403 ✅
 
@@ -318,7 +318,7 @@ Why: Attacker doesn't have the secret (it's in Terraform state, not public)
 # Extracts the secret: 8f2a9b3c1d4e7f9a2b5c8d1e4f7a9b3c
 
 HEADER_VALUE="8f2a9b3c1d4e7f9a2b5c8d1e4f7a9b3c"
-curl -H "X-Chewbacca-Growl: $HEADER_VALUE" \
+curl -H "X-jarvis-Growl: $HEADER_VALUE" \
      https://alb-dns
 ```
 
@@ -344,7 +344,7 @@ Layer 1 Defense (IP Restriction):
   ├─ Check: In CloudFront range? YES ✅
 
 Layer 2 Defense (Header Validation):
-  ├─ Header: X-Chewbacca-Growl: 8f2a9b3c... (correct)
+  ├─ Header: X-jarvis-Growl: 8f2a9b3c... (correct)
   ├─ Match? YES ✅
   └─ Forward to target group
 
@@ -367,7 +367,7 @@ Request arrives at ALB listener on port 443
         ↓
 ┌─────────────────────────────────────────┐
 │ Priority 10:                            │
-│ IF header matches X-Chewbacca-Growl    │
+│ IF header matches X-jarvis-Growl    │
 │ THEN forward to target group            │
 │ ELSE continue to next rule              │
 └─────────────────────────────────────────┘
@@ -391,7 +391,7 @@ Request arrives at ALB listener on port 443
 ```bash
 # Get ALB security group
 ALB_SG=$(aws ec2 describe-security-groups \
-  --filters "Name=group-name,Values=chewbacca-alb-sg01" \
+  --filters "Name=group-name,Values=jarvis-alb-sg01" \
   --query 'SecurityGroups[0].GroupId' --output text)
 
 # Check if CloudFront prefix list is in inbound rules
@@ -409,7 +409,7 @@ aws ec2 describe-security-groups \
 # Get ALB listener rules
 LISTENER_ARN=$(aws elbv2 describe-listeners \
   --load-balancer-arn $(aws elbv2 describe-load-balancers \
-    --query 'LoadBalancers[?LoadBalancerName==`chewbacca-alb01`].LoadBalancerArn' --output text) \
+    --query 'LoadBalancers[?LoadBalancerName==`jarvis-alb01`].LoadBalancerArn' --output text) \
   --query 'Listeners[?Port==`443`].ListenerArn' --output text)
 
 # Check listener rules
@@ -418,7 +418,7 @@ aws elbv2 describe-listener-rules \
   --query 'Rules[*].[Priority,Conditions[0].HttpHeaderConfig.HttpHeaderName,Actions[0].Type]'
 
 # Expected output:
-# [ "10", "X-Chewbacca-Growl", "forward" ]
+# [ "10", "X-jarvis-Growl", "forward" ]
 # [ "100", null, "fixed-response" ]
 ```
 
@@ -427,7 +427,7 @@ aws elbv2 describe-listener-rules \
 ```bash
 # Get ALB DNS
 ALB_DNS=$(aws elbv2 describe-load-balancers \
-  --query 'LoadBalancers[?LoadBalancerName==`chewbacca-alb01`].DNSName' \
+  --query 'LoadBalancers[?LoadBalancerName==`jarvis-alb01`].DNSName' \
   --output text)
 
 # Try direct access
@@ -443,7 +443,7 @@ curl -I https://$ALB_DNS
 ```bash
 # Get domain name
 DOMAIN=$(aws ssm get-parameter \
-  --name /chewbacca/domain_name \
+  --name /jarvis/domain_name \
   --query 'Parameter.Value' --output text)
 
 # Try via CloudFront
@@ -481,7 +481,7 @@ Since the secret is stored in Terraform state (not in code), rotate it periodica
 
 ```bash
 # 1. Remove old secret from state
-terraform state rm aws_random_password.chewbacca_origin_header_value01
+terraform state rm aws_random_password.jarvis_origin_header_value01
 
 # 2. Generate new secret
 terraform apply
@@ -491,7 +491,7 @@ terraform apply
 # 4. CloudFront automatically includes new header (no change needed)
 
 # 5. Test access
-curl -I https://chewbacca-growl.com
+curl -I https://jarvis-growl.com
 # Should work immediately (CloudFront has new header)
 ```
 
@@ -585,7 +585,7 @@ resource "aws_security_group_rule" "alb_ingress_cf" {
 resource "aws_lb_listener_rule" "forward" {
   condition {
     http_header {
-      http_header_name = "X-Chewbacca-Growl"
+      http_header_name = "X-jarvis-Growl"
       values           = ["mySecretValue123"]  # ← In code!
     }
   }
@@ -601,7 +601,7 @@ resource "random_password" "secret" {
 resource "aws_lb_listener_rule" "forward" {
   condition {
     http_header {
-      http_header_name = "X-Chewbacca-Growl"
+      http_header_name = "X-jarvis-Growl"
       values           = [random_password.secret.result]  # ← Generated
     }
   }
@@ -657,3 +657,4 @@ Result: ✅ Meets FedRAMP requirement (web application firewall in place)
 **Document Version**: 1.0  
 **Lab 2 Component**: Origin Cloaking Security  
 **Last Updated**: January 21, 2026
+
