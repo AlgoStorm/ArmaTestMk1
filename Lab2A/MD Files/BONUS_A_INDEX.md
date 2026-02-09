@@ -406,7 +406,7 @@ aws ssm start-session --target $INSTANCE_ID
 
 ### Terraform Apply Fails?
 - Check VPC exists and has correct ID
-- Verify RDS instance (chrisbarm-rds01) exists
+- Verify RDS instance (jarvis-rds01) exists
 - Ensure subnets exist: `aws ec2 describe-subnets`
 - Check account limits not exceeded
 
@@ -441,3 +441,4 @@ Refer to:
 **Difficulty:** Intermediate
 **Time:** 15-20 minutes
 **Career Value:** ⭐⭐⭐⭐⭐ (interview-credible architecture)
+
