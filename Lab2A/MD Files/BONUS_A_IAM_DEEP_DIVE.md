@@ -62,7 +62,7 @@ aws ssm start-session --target i-xxxxx
     "logs:PutLogEvents",
     "logs:DescribeLogStreams"
   ],
-  "Resource": "arn:aws:logs:us-east-1:123456789012:log-group:/aws/ec2/bonus-a-rds-app:*"
+  "Resource": "arn:aws:logs:us-east-1:125456489012:log-group:/aws/ec2/bonus-a-rds-app:*"
 }
 ```
 
@@ -483,3 +483,4 @@ aws iam simulate-principal-policy \
 
 **Document Version**: 1.0  
 **Last Updated**: January 21, 2026
+
