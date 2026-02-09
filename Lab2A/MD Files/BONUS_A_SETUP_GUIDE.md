@@ -317,7 +317,7 @@ If your org needs general internet access for package installation:
 resource "aws_route" "bonus_a_nat_route" {
   route_table_id            = aws_route_table.bonus_a_private_rt.id
   destination_cidr_block    = "0.0.0.0/0"
-  nat_gateway_id            = aws_nat_gateway.chrisbarm_nat01.id
+  nat_gateway_id            = aws_nat_gateway.jarvis_nat01.id
 }
 ```
 
@@ -427,3 +427,4 @@ curl -v https://logs.us-east-1.amazonaws.com
 - VPC Endpoints: https://docs.aws.amazon.com/vpc/latest/privatelink/
 - Session Manager: https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager.html
 - Least-privilege: https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html#grant-least-privilege
+
