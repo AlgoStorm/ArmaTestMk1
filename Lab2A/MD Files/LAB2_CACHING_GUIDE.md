@@ -91,7 +91,7 @@ Origin Request Policy: "What does the origin NEED to process the request?"
 ### Your Static Content Policy
 
 ```hcl
-resource "aws_cloudfront_cache_policy" "chewbacca_cache_static01" {
+resource "aws_cloudfront_cache_policy" "jarvis_cache_static01" {
   default_ttl = 86400        # 1 day
   max_ttl     = 31536000     # 1 year
   min_ttl     = 0
@@ -123,7 +123,7 @@ Request 2: GET /static/logo.png (cookie: session=xyz)  [Different user, differen
 ### Your API Policy (No Caching)
 
 ```hcl
-resource "aws_cloudfront_cache_policy" "chewbacca_cache_api_disabled01" {
+resource "aws_cloudfront_cache_policy" "jarvis_cache_api_disabled01" {
   default_ttl = 0
   max_ttl     = 0
   min_ttl     = 0
@@ -166,13 +166,13 @@ Your distribution uses **ordered cache behaviors** to route requests:
 # Priority 1: Check if URL starts with /static/*
 ordered_cache_behavior {
   path_pattern = "/static/*"
-  cache_policy_id = aws_cloudfront_cache_policy.chewbacca_cache_static01.id
+  cache_policy_id = aws_cloudfront_cache_policy.jarvis_cache_static01.id
   # → All static files use aggressive caching
 }
 
 # Default: If no path pattern matches, use API policy
 default_cache_behavior {
-  cache_policy_id = aws_cloudfront_cache_policy.chewbacca_cache_api_disabled01.id
+  cache_policy_id = aws_cloudfront_cache_policy.jarvis_cache_api_disabled01.id
   # → Everything else (including /api/*) has no caching
 }
 ```
@@ -291,7 +291,7 @@ resource "aws_cloudfront_cache_policy" "api_cacheable" {
 Your static content policy adds explicit Cache-Control headers:
 
 ```hcl
-resource "aws_cloudfront_response_headers_policy" "chewbacca_rsp_static01" {
+resource "aws_cloudfront_response_headers_policy" "jarvis_rsp_static01" {
   name = "${var.project_name}-rsp-static01"
 
   custom_headers_config {
@@ -377,7 +377,7 @@ aws cloudwatch get-metric-statistics \
 
 ```bash
 # See what headers CloudFront returns
-curl -I https://app.chewbacca-growl.com/static/logo.png
+curl -I https://app.jarvis-growl.com/static/logo.png
 
 # Expected output:
 # HTTP/2 200
@@ -387,7 +387,7 @@ curl -I https://app.chewbacca-growl.com/static/logo.png
 # age: 3600  ← Cached for 1 hour
 
 # Check API (should say Miss)
-curl -I https://app.chewbacca-growl.com/api/users
+curl -I https://app.jarvis-growl.com/api/users
 
 # Expected output:
 # HTTP/2 200
@@ -400,13 +400,13 @@ curl -I https://app.chewbacca-growl.com/api/users
 
 ```bash
 # These should have the SAME cache key (should hit cache)
-curl -I "https://app.chewbacca-growl.com/static/app.js"
-curl -I "https://app.chewbacca-growl.com/static/app.js?v=1.0"
+curl -I "https://app.jarvis-growl.com/static/app.js"
+curl -I "https://app.jarvis-growl.com/static/app.js?v=1.0"
 # Both should hit cache (query strings ignored for /static/*)
 
 # These should have DIFFERENT cache keys (won't hit cache)
-curl -I "https://app.chewbacca-growl.com/api/users?id=123&auth=token1"
-curl -I "https://app.chewbacca-growl.com/api/users?id=123&auth=token2"
+curl -I "https://app.jarvis-growl.com/api/users?id=123&auth=token1"
+curl -I "https://app.jarvis-growl.com/api/users?id=123&auth=token2"
 # Different because /api/* uses cache policy with all query strings in key
 ```
 
@@ -505,3 +505,4 @@ Result:
 **Document Version**: 1.0  
 **Lab 2 Component**: CloudFront Caching Strategy  
 **Last Updated**: January 21, 2026
+
