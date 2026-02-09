@@ -396,7 +396,7 @@ $ aws ssm get-parameter --name /lab/db/endpoint
 {
   "Parameter": {
     "Name": "/lab/db/endpoint",
-    "Value": "chrisbarm-rds01.xxxxx.us-east-1.rds.amazonaws.com"
+    "Value": "jarvis-rds01.xxxxx.us-east-1.rds.amazonaws.com"
   }
 }
 ✓ Success
@@ -584,3 +584,4 @@ Before you claim victory, verify:
 **Document Version**: 1.0  
 **Purpose**: Cross-reference design goals ↔ verification ↔ code ↔ documentation  
 **Last Updated**: January 21, 2026
+
