@@ -3,9 +3,10 @@
   "timestamp": "2026-02-02T21:25:20Z",
   "region": "us-east-1",
   "secret_id": "lab1a/rds/mysql",
-  "db_instance": "chrisbarm-rds01",
-  "old_password": "Zmo35QtFhO/zz90tnmkYsQ==",
-  "new_password": "XoqLaI1obJLImidF",
-  "rds_actual_password": "Zmo35QtFhO/zz90tnmkYsQ==",
+  "db_instance": "jarvis-rds01",
+  "old_password": "Zmo3gvcyud6O/ace7464bvfYsQ==",
+  "new_password": "Xq8y7duyvv63ndcxF",
+  "rds_actual_password": "Zmo35QkbadcghO/zbnacuygc73v==",
   "notes": "RDS still has old password. Secrets Manager has new password. Authentication will fail."
 }
+
