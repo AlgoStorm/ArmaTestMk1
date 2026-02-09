@@ -59,8 +59,8 @@ The RDS instance was:
 ```
 
 **Details:**
-- ✅ EC2 Instance Profile: `chrisbarm-instance-profile01`
-- ✅ IAM Role: `chrisbarm-ec2-role01`
+- ✅ EC2 Instance Profile: `jarvis-instance-profile01`
+- ✅ IAM Role: `jarvis-ec2-role01`
 - ✅ Policies Attached:
   - `AmazonSSMManagedInstanceCore` (for SSM Session Manager)
   - `CloudWatchAgentServerPolicy` (for CloudWatch logging)
@@ -97,7 +97,7 @@ The RDS instance was:
 
 ```bash
 cd terraform_restart_fixed
-terraform state rm aws_db_instance.chrisbarm_rds01
+terraform state rm aws_db_instance.jarvis_rds01
 ```
 
 ### Step 2: Delete Old RDS in Default VPC
@@ -117,7 +117,7 @@ Remove `lifecycle { ignore_changes = all }` from the RDS resource:
 
 ```terraform
 # In main.tf, change:
-resource "aws_db_instance" "chrisbarm_rds01" {
+resource "aws_db_instance" "jarvis_rds01" {
   # ... settings ...
   lifecycle {
     ignore_changes = all   # ← REMOVE THIS BLOCK
@@ -125,7 +125,7 @@ resource "aws_db_instance" "chrisbarm_rds01" {
 }
 
 # To:
-resource "aws_db_instance" "chrisbarm_rds01" {
+resource "aws_db_instance" "jarvis_rds01" {
   # ... settings ...
   # No lifecycle block - let Terraform manage it
 }
@@ -140,8 +140,8 @@ terraform apply
 Expected output:
 ```
 Plan: 1 to add (RDS instance in vpc-0f2ad42c2c13e8707)
-aws_db_instance.chrisbarm_rds01: Creating...
-aws_vpc_security_group_ingress_rule.chrisbarm_rds_sg_ingress_mysql: Creating...
+aws_db_instance.jarvis_rds01: Creating...
+aws_vpc_security_group_ingress_rule.jarvis_rds_sg_ingress_mysql: Creating...
 ```
 
 ### Step 5: Verify All Tests Pass
@@ -151,7 +151,7 @@ rm -f gate_*.json
 REGION=us-east-1 \
 INSTANCE_ID=i-0968fd41f8aaa43eb \
 SECRET_ID=lab1a/rds/mysql \
-DB_ID=chrisbarm-rds01 \
+DB_ID=jarvis-rds01 \
 ./run_all_gates.sh
 ```
 
@@ -221,8 +221,8 @@ aws rds describe-db-instances --db-instance-identifier lab-mysql \
   --region us-east-1 --query 'DBInstances[0].DBSubnetGroup.Subnets[].SubnetId'
 
 # Check Terraform state
-terraform state show aws_db_instance.chrisbarm_rds01
-terraform state show aws_security_group.chrisbarm_rds_sg01
+terraform state show aws_db_instance.jarvis_rds01
+terraform state show aws_security_group.jarvis_rds_sg01
 ```
 
 ---
@@ -247,3 +247,4 @@ Lab 1a is **COMPLETE** when:
 **Action**: Follow the 5-step fix process above to complete Lab 1a.
 
 **Contact**: If issues persist after fix, check Terraform state consistency with AWS actual resources.
+
