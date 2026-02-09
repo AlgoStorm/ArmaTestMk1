@@ -632,10 +632,10 @@ aws ssm start-session --target <instance-id> --region us-east-1
 ### 2. Python Automation & Testing Tools
 
 **Security Testing:**
-- `malgus_cli.py` - CLI tool for infrastructure management
-- `malgus_cloudfront_cache_probe.py` - Test CloudFront caching behavior
-- `malgus_origin_cloak_tester.py` - Verify origin cloaking (test direct ALB access fails)
-- `malgus_waf_block_spike_detector.py` - Validate WAF blocking malicious requests
+- `jarvis_cli.py` - CLI tool for infrastructure management
+- `jarvis_cloudfront_cache_probe.py` - Test CloudFront caching behavior
+- `jarvis_origin_cloak_tester.py` - Verify origin cloaking (test direct ALB access fails)
+- `jarvis_waf_block_spike_detector.py` - Validate WAF blocking malicious requests
 
 **Example: Origin Cloaking Tester**
 ```python
@@ -1090,5 +1090,6 @@ This project demonstrates **production-ready thinking** across multiple dimensio
 **Document Created:** January 22, 2026  
 **Total Project Scope:** 4 labs, 40+ documentation files, 9 verification scripts, 570 lines of Terraform, 274 lines of Python  
 **Estimated Time Investment:** 40-60 hours of hands-on learning and building
+
 
 
