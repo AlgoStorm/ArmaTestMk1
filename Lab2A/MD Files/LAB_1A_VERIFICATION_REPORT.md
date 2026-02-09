@@ -5,7 +5,7 @@
 ### Test Results
 
 #### ✅ Gate 1: Secrets & IAM Role (PASSED)
-- **EC2 Instance Role**: ✅ Attached (`chrisbarm-instance-profile01`)
+- **EC2 Instance Role**: ✅ Attached (`jarvis-instance-profile01`)
 - **IAM Role Policies**: ✅ Includes `secrets_policy` (Secrets Manager access)
 - **Secrets Manager Secret**: ✅ Exists (`lab1a/rds/mysql`)
 - **Secret Credentials**: ✅ Contains all required fields (username, password, host, port, dbname)
@@ -40,12 +40,12 @@ Add this to `main.tf` after the RDS ingress rule definition:
 
 ```terraform
 # Add ingress to the second RDS SG if needed
-resource "aws_vpc_security_group_ingress_rule" "chrisbarm_rds_sg_ingress_mysql_secondary" {
+resource "aws_vpc_security_group_ingress_rule" "jarvis_rds_sg_ingress_mysql_secondary" {
   ip_protocol                  = local.tcp_protocol
   security_group_id            = "sg-0b45a1fd3bc4f0a5a"  # Secondary RDS SG
   from_port                    = local.db_port
   to_port                      = local.db_port
-  referenced_security_group_id = aws_security_group.chrisbarm_ec2_sg01.id
+  referenced_security_group_id = aws_security_group.jarvis_ec2_sg01.id
 }
 ```
 
@@ -100,3 +100,4 @@ mysql -h lab-mysql.c4x68420cyvy.us-east-1.rds.amazonaws.com -u admin -p
 **Action Required**: Add SG-to-SG ingress rule to allow EC2 → RDS communication
 
 Once the SG rule is added, re-run the verification suite for full pass (exit code 0).
+
