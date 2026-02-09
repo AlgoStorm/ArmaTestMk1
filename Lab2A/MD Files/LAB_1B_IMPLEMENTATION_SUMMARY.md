@@ -66,8 +66,8 @@ export REGION="us-east-1"
 export INSTANCE_ID="i-0968fd41f8aaa43eb"
 export SECRET_ID="lab1a/rds/mysql"
 export ALARM_NAME="lab-db-connection-failure"
-export LOG_GROUP="/aws/ec2/chrisbarm-rds-app"
-export DB_INSTANCE="chrisbarm-rds01"
+export LOG_GROUP="/aws/ec2/jarvis-rds-app"
+export DB_INSTANCE="jarvis-rds01"
 export RDS_SG="sg-09253c24b2eee0c11"
 export EC2_SG="sg-0059285ecdea5d41d"
 
@@ -310,10 +310,10 @@ Lab 1b Incident Response
 
 ✓ Lab 1a completed and verified
 ✓ EC2 instance running (i-0968fd41f8aaa43eb)
-✓ RDS instance running (chrisbarm-rds01)
+✓ RDS instance running (jarvis-rds01)
 ✓ Secrets Manager secret exists (lab1a/rds/mysql)
 ✓ Parameter Store values exist (/lab/db/endpoint, /lab/db/port, /lab/db/name)
-✓ CloudWatch Log Group exists (/aws/ec2/chrisbarm-rds-app)
+✓ CloudWatch Log Group exists (/aws/ec2/jarvis-rds-app)
 ✓ CloudWatch Alarm configured (lab-db-connection-failure)
 ✓ SNS topic exists (lab-db-incidents)
 ✓ EC2 IAM role has Secrets Manager + Parameter Store access
@@ -369,3 +369,4 @@ This is mid-level cloud engineer capability.
 All scripts ready. All documentation ready. Incident response framework ready.
 
 Next: Run an incident.
+
