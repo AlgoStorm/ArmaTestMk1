@@ -2,7 +2,7 @@
 
 ## 📋 Executive Summary
 
-Your Chewbacca Lab 2 architecture implements a **well-designed CDN + origin cloaking pattern** with solid security practices. The code demonstrates strong understanding of CloudFront distribution, origin validation, and WAF integration.
+Your jarvis Lab 2 architecture implements a **well-designed CDN + origin cloaking pattern** with solid security practices. The code demonstrates strong understanding of CloudFront distribution, origin validation, and WAF integration.
 
 **Overall Assessment**: ⭐⭐⭐⭐ (Production-ready with minor refinements)
 
@@ -13,9 +13,9 @@ Your Chewbacca Lab 2 architecture implements a **well-designed CDN + origin cloa
 ### 1. **Origin Cloaking Pattern (Excellent)**
 ```hcl
 # CloudFront-only prefix list
-data "aws_ec2_managed_prefix_list" "chewbacca_cf_origin_facing01"
+data "aws_ec2_managed_prefix_list" "jarvis_cf_origin_facing01"
 # ALB accepts only CloudFront IPs
-resource "aws_security_group_rule" "chewbacca_alb_ingress_cf44301"
+resource "aws_security_group_rule" "jarvis_alb_ingress_cf44301"
 ```
 
 **Why this is good**:
@@ -32,15 +32,15 @@ resource "aws_security_group_rule" "chewbacca_alb_ingress_cf44301"
 ```hcl
 # CloudFront adds custom header
 custom_header {
-  name  = "X-Chewbacca-Growl"
-  value = random_password.chewbacca_origin_header_value01.result
+  name  = "X-jarvis-roar"
+  value = random_password.jarvis_origin_header_value01.result
 }
 
 # ALB validates header
 condition {
   http_header {
-    http_header_name = "X-Chewbacca-Growl"
-    values           = [random_password.chewbacca_origin_header_value01.result]
+    http_header_name = "X-jarvis-roar"
+    values           = [random_password.jarvis_origin_header_value01.result]
   }
 }
 ```
@@ -57,7 +57,7 @@ condition {
 
 ### 3. **WAF at CloudFront Edge (Strategic)**
 ```hcl
-web_acl_id = aws_wafv2_web_acl.chewbacca_cf_waf01.arn
+web_acl_id = aws_wafv2_web_acl.jarvis_cf_waf01.arn
 ```
 
 **Why this is good**:
@@ -128,14 +128,14 @@ restrictions {
 
 **Current Code**:
 ```hcl
-resource "aws_lb_listener_rule" "chewbacca_require_origin_header01" {
-  listener_arn = aws_lb_listener.chewbacca_https_listener01.arn
+resource "aws_lb_listener_rule" "jarvis_require_origin_header01" {
+  listener_arn = aws_lb_listener.jarvis_https_listener01.arn
   priority     = 10  # ← Custom rule
   action { type = "forward" ... }
 }
 
-resource "aws_lb_listener_rule" "chewbacca_default_block01" {
-  listener_arn = aws_lb_listener.chewbacca_https_listener01.arn
+resource "aws_lb_listener_rule" "jarvis_default_block01" {
+  listener_arn = aws_lb_listener.jarvis_https_listener01.arn
   priority     = 99  # ← Catch-all rule
   action { type = "fixed-response" ... }
 }
@@ -150,15 +150,15 @@ resource "aws_lb_listener_rule" "chewbacca_default_block01" {
 **Fix**:
 ```hcl
 # Require header - must come FIRST
-resource "aws_lb_listener_rule" "chewbacca_require_origin_header01" {
-  listener_arn = aws_lb_listener.chewbacca_https_listener01.arn
+resource "aws_lb_listener_rule" "jarvis_require_origin_header01" {
+  listener_arn = aws_lb_listener.jarvis_https_listener01.arn
   priority     = 10
   action { type = "forward" ... }
   
   condition {
     http_header {
-      http_header_name = "X-Chewbacca-Growl"
-      values           = [random_password.chewbacca_origin_header_value01.result]
+      http_header_name = "X-jarvis-roar"
+      values           = [random_password.jarvis_origin_header_value01.result]
     }
   }
   # ← ADD path pattern if you have specific paths
@@ -168,8 +168,8 @@ resource "aws_lb_listener_rule" "chewbacca_require_origin_header01" {
 }
 
 # Default DENY - catch everything else (lower priority = lower precedence)
-resource "aws_lb_listener_rule" "chewbacca_default_block01" {
-  listener_arn = aws_lb_listener.chewbacca_https_listener01.arn
+resource "aws_lb_listener_rule" "jarvis_default_block01" {
+  listener_arn = aws_lb_listener.jarvis_https_listener01.arn
   priority     = 100  # ← HIGHER number for lower precedence
   action { type = "fixed-response" ... }
   
@@ -202,7 +202,7 @@ forwarded_values {
 **Recommended Fix**:
 ```hcl
 # For APIs that bypass cache entirely:
-resource "aws_cloudfront_cache_policy" "chewbacca_api_nocache" {
+resource "aws_cloudfront_cache_policy" "jarvis_api_nocache" {
   name        = "${var.project_name}-api-nocache"
   description = "No caching for API endpoints"
   
@@ -217,7 +217,7 @@ resource "aws_cloudfront_cache_policy" "chewbacca_api_nocache" {
   }
 }
 
-resource "aws_cloudfront_origin_request_policy" "chewbacca_all_forward" {
+resource "aws_cloudfront_origin_request_policy" "jarvis_all_forward" {
   name        = "${var.project_name}-forward-all"
   description = "Forward all headers, query strings, cookies"
   
@@ -234,8 +234,8 @@ default_cache_behavior {
   allowed_methods = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
   cached_methods  = ["GET", "HEAD"]
   
-  cache_policy_id            = aws_cloudfront_cache_policy.chewbacca_api_nocache.id
-  origin_request_policy_id   = aws_cloudfront_origin_request_policy.chewbacca_all_forward.id
+  cache_policy_id            = aws_cloudfront_cache_policy.jarvis_api_nocache.id
+  origin_request_policy_id   = aws_cloudfront_origin_request_policy.jarvis_all_forward.id
 }
 ```
 
@@ -346,28 +346,28 @@ rule {
 **Recommendation**:
 ```hcl
 # CloudWatch log group for WAF
-resource "aws_cloudwatch_log_group" "chewbacca_cf_waf_logs" {
+resource "aws_cloudwatch_log_group" "jarvis_cf_waf_logs" {
   name              = "/aws/wafv2/cloudfront/${var.project_name}"
   retention_in_days = 30
 }
 
 # WAF Logging
-resource "aws_wafv2_web_acl_logging_configuration" "chewbacca_cf_waf_logging" {
-  resource_arn            = aws_wafv2_web_acl.chewbacca_cf_waf01.arn
-  log_destination_configs = [aws_cloudwatch_log_group.chewbacca_cf_waf_logs.arn]
+resource "aws_wafv2_web_acl_logging_configuration" "jarvis_cf_waf_logging" {
+  resource_arn            = aws_wafv2_web_acl.jarvis_cf_waf01.arn
+  log_destination_configs = [aws_cloudwatch_log_group.jarvis_cf_waf_logs.arn]
 }
 
 # CloudFront Logging (to S3)
-resource "aws_s3_bucket" "chewbacca_cf_logs" {
+resource "aws_s3_bucket" "jarvis_cf_logs" {
   bucket_prefix = "${var.project_name}-cf-logs-"
 }
 
-resource "aws_cloudfront_distribution" "chewbacca_cf01" {
+resource "aws_cloudfront_distribution" "jarvis_cf01" {
   # ... existing config ...
   
   logging_config {
     include_cookies = false
-    bucket          = aws_s3_bucket.chewbacca_cf_logs.bucket_regional_domain_name
+    bucket          = aws_s3_bucket.jarvis_cf_logs.bucket_regional_domain_name
     prefix          = "logs/"
   }
 }
@@ -404,7 +404,7 @@ viewer_certificate {
 **Recommended Enhancement**:
 ```hcl
 # Option 1: Create ACM cert as part of this code (if domains are available)
-resource "aws_acm_certificate" "chewbacca_cf_cert" {
+resource "aws_acm_certificate" "jarvis_cf_cert" {
   domain_name       = var.domain_name
   validation_method = "DNS"
   
@@ -418,7 +418,7 @@ resource "aws_acm_certificate" "chewbacca_cf_cert" {
 }
 
 # Option 2: Use data source if cert already exists
-data "aws_acm_certificate" "chewbacca_cf_cert" {
+data "aws_acm_certificate" "jarvis_cf_cert" {
   domain      = var.domain_name
   provider    = aws.us_east_1  # ← CRITICAL: CloudFront only works with us-east-1 certs
   statuses    = ["ISSUED"]
@@ -427,7 +427,7 @@ data "aws_acm_certificate" "chewbacca_cf_cert" {
 
 # In distribution:
 viewer_certificate {
-  acm_certificate_arn      = data.aws_acm_certificate.chewbacca_cf_cert.arn
+  acm_certificate_arn      = data.aws_acm_certificate.jarvis_cf_cert.arn
   ssl_support_method       = "sni-only"
   minimum_protocol_version = "TLSv1.2_2021"
 }
@@ -444,8 +444,8 @@ viewer_certificate {
 **Recommendation**:
 ```hcl
 # HTTP listener (redirects to HTTPS)
-resource "aws_lb_listener" "chewbacca_http_listener01" {
-  load_balancer_arn = aws_lb.chewbacca_alb01.arn
+resource "aws_lb_listener" "jarvis_http_listener01" {
+  load_balancer_arn = aws_lb.jarvis_alb01.arn
   port              = 80
   protocol          = "HTTP"
   
@@ -460,8 +460,8 @@ resource "aws_lb_listener" "chewbacca_http_listener01" {
 }
 
 # HTTPS listener (with validation rules)
-resource "aws_lb_listener" "chewbacca_https_listener01" {
-  load_balancer_arn = aws_lb.chewbacca_alb01.arn
+resource "aws_lb_listener" "jarvis_https_listener01" {
+  load_balancer_arn = aws_lb.jarvis_alb01.arn
   port              = 443
   protocol          = "HTTPS"
   certificate_arn   = var.alb_acm_cert_arn
@@ -586,3 +586,4 @@ resource "aws_lb_listener" "chewbacca_https_listener01" {
 
 **Document Version**: 1.0  
 **Review Date**: January 21, 2026
+
