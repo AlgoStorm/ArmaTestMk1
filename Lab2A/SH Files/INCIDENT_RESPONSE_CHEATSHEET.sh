@@ -19,8 +19,8 @@ export REGION="us-east-1"
 export INSTANCE_ID="i-0968fd41f8aaa43eb"
 export SECRET_ID="lab1a/rds/mysql"
 export ALARM_NAME="lab-db-connection-failure"
-export LOG_GROUP="/aws/ec2/chrisbarm-rds-app"
-export DB_INSTANCE="chrisbarm-rds01"
+export LOG_GROUP="/aws/ec2/jarvis-rds-app"
+export DB_INSTANCE="jarvis-rds01"
 export RDS_SG="sg-09253c24b2eee0c11"
 export EC2_SG="sg-0059285ecdea5d41d"
 
@@ -214,3 +214,4 @@ This is operational maturity. You've got this.
 EOF
 
 cat incident_response_cheatsheet.txt
+
