@@ -8,9 +8,9 @@
 set -euo pipefail
 
 REGION="us-east-1"
-PROJECT_NAME="chrisbarm"
-DB_NAME="chrisbarm-rds01"
-EC2_TAG_NAME="chrisbarm-ec2_01"
+PROJECT_NAME="jarvis"
+DB_NAME="jarvis-rds01"
+EC2_TAG_NAME="jarvis-ec2_01"
 EC2_SG_NAME="${PROJECT_NAME}-ec2-sg01"
 RDS_SG_NAME="${PROJECT_NAME}-rds-sg01"
 SECRET_NAME="lab1a/rds/mysql"
@@ -407,3 +407,4 @@ else
     echo -e "\n${RED}✗ Some checks failed. Please review above.${NC}"
     exit 1
 fi
+
