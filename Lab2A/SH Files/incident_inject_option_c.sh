@@ -13,7 +13,7 @@
 set -e
 
 REGION="${REGION:-us-east-1}"
-DB_INSTANCE="${DB_INSTANCE:-chrisbarm-rds01}"
+DB_INSTANCE="${DB_INSTANCE:-jarvis-rds01}"
 
 echo "============================================"
 echo "Incident Injection: Option C — Database Interruption"
@@ -113,3 +113,4 @@ cat > "$INCIDENT_STATE_FILE" <<EOF
 EOF
 
 echo "Incident state saved to: $INCIDENT_STATE_FILE"
+
