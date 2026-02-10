@@ -26,7 +26,7 @@ fi
 # Resolve RDS security group if still invalid
 if [ -z "$RDS_SG" ] || ! aws ec2 describe-security-groups --group-ids "$RDS_SG" --region "$REGION" --output text >/dev/null 2>&1; then
   RDS_SG=$(aws ec2 describe-security-groups \
-    --filters "Name=group-name,Values=chrisbarm-rds-sg01" \
+    --filters "Name=group-name,Values=jarvis-rds-sg01" \
     --region "$REGION" \
     --query "SecurityGroups[0].GroupId" \
     --output text 2>/dev/null)
@@ -134,10 +134,11 @@ echo "  3. Monitor alarm state:"
 echo "     aws cloudwatch describe-alarms --alarm-names lab-db-connection-failure"
 echo ""
 echo "  4. Check logs for recovery:"
-echo "     aws logs tail /aws/ec2/chrisbarm-rds-app --follow"
+echo "     aws logs tail /aws/ec2/jarvis-rds-app --follow"
 echo ""
 echo "  5. Expected: Alarm transitions to OK within 5 minutes"
 echo ""
 
 # Save recovery completion time
 echo "{\"recovery_type\": \"network_isolation\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"status\": \"completed\"}" > recovery_complete.json
+
