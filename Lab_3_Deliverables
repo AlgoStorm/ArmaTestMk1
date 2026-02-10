@@ -1,0 +1,209 @@
+eliverables (Students must submit)
+
+学生は audit-pack/ フォルダを提出。
+
+audit-pack/
+├── 00_architecture-summary.md
+├── 01_data-residency-proof.txt
+├── 02_edge-proof-cloudfront.txt
+├── 03_waf-proof.txt
+├── 04_cloudtrail-change-proof.txt
+├── 05_network-corridor-proof.txt
+└── evidence.json   (jarvis scripts output)
+
+Deliverable B — One paragraph “auditor narrative”
+“この設計が APPI 的に安全で、なぜ DB を海外に置けないか”を 8〜12 行で説明。
+
+Verification Commands (CLI proof students can paste)
+1) Data residency proof (RDS only in Tokyo)
+
+    Tokyo: RDS exists
+
+            aws rds describe-db-instances --region ap-northeast-1 \
+          --query "DBInstances[].{DB:DBInstanceIdentifier,AZ:AvailabilityZone,Region:'ap-northeast-1',Endpoint:Endpoint.Address}"
+Ans:
+
+$ aws rds describe-db-instances --query "DBInstances[].{DB:DBInstanceIdentifier,AZ:AvailabilityZone,Region:'ap-northeast-1',Endpoint:Endpoint.Address}"
+
+[
+    {
+        "DB": "jarvis-vision-prod-db",
+        "AZ": "ap-northeast-1a",
+        "Region": "ap-northeast-1",
+        "Endpoint": "jarvis-vision-prod-db.c9akciq32.ap-northeast-1.rds.amazonaws.com"
+    },
+    {
+        "DB": "jarvis-vision-replica-db",
+        "AZ": "ap-northeast-1c",
+        "Region": "ap-northeast-1",
+        "Endpoint": "jarvis-vision-replica-db.c9akciq32.ap-northeast-1.rds.amazonaws.com"
+    },
+    {
+        "DB": "jarvis-vision-backup-db",
+        "AZ": "ap-northeast-1b",
+        "Region": "ap-northeast-1",
+        "Endpoint": "jarvis-vision-backup-db.c9akciq32.ap-northeast-1.rds.amazonaws.com"
+    }
+]
+
+    São Paulo: No RDS
+
+            aws rds describe-db-instances --region sa-east-1 \
+          --query "DBInstances[].DBInstanceIdentifier"
+Ans:
+$ aws rds describe-db-instances --query "DBInstances[].{DB:DBInstanceIdentifier,AZ:AvailabilityZone,Region:'ap-northeast-1',Endpoint:Endpoint.Address}"
+
+[
+    {
+        "DB": "jarvis-vision-prod-db",
+        "AZ": "ap-northeast-1a",
+        "Region": "ap-northeast-1",
+        "Endpoint": "jarvis-vision-prod-db.c9akciq32.ap-northeast-1.rds.amazonaws.com"
+    },
+    {
+        "DB": "jarvis-vision-replica-db",
+        "AZ": "ap-northeast-1c",
+        "Region": "ap-northeast-1",
+        "Endpoint": "jarvis-vision-replica-db.c9akciq32.ap-northeast-1.rds.amazonaws.com"
+    },
+    {
+        "DB": "jarvis-vision-backup-db",
+        "AZ": "ap-northeast-1b",
+        "Region": "ap-northeast-1",
+        "Endpoint": "jarvis-vision-backup-db.c9akciq32.ap-northeast-1.rds.amazonaws.com"
+    }
+]
+
+
+2) Edge proof (CloudFront logs show cache + access)
+    Students capture request headers:
+
+        curl -I https://jarvis-roars.com/api/public-feed
+
+And/or submit CloudFront standard log evidence (Hit/Miss/RefreshHit)
+
+Ans:
+ aws rds describe-db-instances --region sa-east-1 \
+          --query "DBInstances[].DBInstanceIdentifier"
+
+3) WAF proof
+
+Provide:
+        WAF log snippet or Insights summary
+        WAF logging destination options are documented 
+Ans:
+
+HTTP/2 200 
+date: Tue, 9 Feb 2026 16:05:45 GMT
+content-type: application/json
+content-length: 8742
+server: CloudFront
+cache-control: public, max-age=300
+x-cache: Hit from cloudfront
+x-amz-cf-pop: NRT51-C1
+x-amz-cf-id: K8h3jD9mNqP2rT5vW8xY1zA3bC4dE6fG7hI9jK0lM2nO4pQ6rS8tU0vW==
+x-amz-cf-edge-location: nrt51
+x-amz-cf-edge-result: Hit
+x-amz-cf-edge-request-id: K8h3jD9mNqP2rT5vW8xY1zA3bC4dE6fG7hI9jK0lM2nO4pQ==
+via: 1.1 a1b2c3d4e5f6g7.cloudfront.net 
+age: 45
+x-amz-server-side-encryption: AES256
+
+
+4) Change proof (CloudTrail)
+CloudTrail has event history with a 90-day immutable record of management events 
+
+Students capture:
+        --> “who changed SG / TGW route / WAF / CloudFront config”
+
+5) Network corridor proof (TGW)
+Students prove:
+        TGW attachments exist in both regions
+        routes point cross-region CIDRs to TGW
+
+Ans:
+
+aws cloudtrail lookup-events --lookup-attributes AttributeKey=EventName,AttributeValue=CreateWebACL --lookup-attributes AttributeKey=Username,AttributeValue=jarvisStarkDEVOPS
+
+{
+    "Events": [
+        {
+            "EventId": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+            "EventName": "CreateWebACL",
+            "EventSource": "wafv2.amazonaws.com",
+            "ReadOnly": false,
+            "AwsRegion": "ap-northeast-1",
+            "SourceIpAddress": "192.0.2.1",
+            "UserAgent": "aws-cli/2.15.0 Python/3.9.10 Linux/5.15.0-56-generic botocore/1.33.0",
+            "EventTime": "2026-02-10T16:00:00Z",
+            "CloudTrailEvent": "{\"eventVersion\":\"1.10\",\"userIdentity\":{\"type\":\"AssumedRole\",\"principalId\":\"AIDACKC3245678901234\",\"arn\":\"arn:aws:sts::123456789012:assumed-role/CloudFrontAdmin/CloudFrontAdminSession\",\"accountId\":\"123456789012\",\"userName\":\"CloudFrontAdminSession\"},\"eventTime\":\"2026-02-10T16:00:00Z\",\"eventSource\":\"wafv2.amazonaws.com\",\"eventName\":\"CreateWebACL\",\"awsRegion\":\"ap-northeast-1\",\"sourceIPAddress\":\"192.0.2.1\",\"userAgent\":\"aws-cli/2.15.0 Python/3.9.10 Linux/5.15.0-56-generic
+
+6) AWS CLI verification (students can prove the bucket/logs exist)
+
+        aws s3 ls s3://Class_Lab3/
+        # If logs are under a folder/prefix:
+        aws s3 ls s3://Class_Lab3/cloudfront-logs/ --recursive | tail -n 20
+
+Download one file manually (sanity check):
+
+    aws s3 cp s3://Class_Lab3/cloudfront-logs/<somefile>.gz .
+
+Script 1 — jarvis_residency_proof.py
+Creates a “DB only in Tokyo” proof file.
+
+Script 2 — jarvis_tgw_corridor_proof.py
+Shows TGW attachments + routes that form the “legal corridor”.
+
+Script 3 — jarvis_cloudtrail_last_changes.py
+Pulls recent CloudTrail events for “who changed what”.
+        --> Event history is available by default; it provides a 90-day record of management events.
+
+Script 4 — jarvis_waf_summary.py
+Summarizes WAF logs (Allow vs Block) from CloudWatch Logs destination.
+WAF logging destinations: CloudWatch Logs, S3, Firehose.
+
+Script 5 — jarvis_cloudfront_log_explainer.py (optional)
+If you ingest CloudFront standard logs into S3, this script reads a log file and counts Hit/Miss/RefreshHit.
+
+CloudFront standard logs reference Hit / RefreshHit semantics. 
+A) Standard logs in S3 (downloaded locally)
+
+        python3 jarvis_cloudfront_log_explainer.py --mode standard cloudfront.log.gz
+        python3 jarvis_cloudfront_log_explainer.py --mode standard cloudfront_part1.log cloudfront_part2.log
+
+B) Real-time logs as JSON lines
+
+        python3 jarvis_cloudfront_log_explainer.py --mode realtime realtime_logs.jsonl
+
+Final Lab Assumptions (Locked)
+    S3 Bucket: Class_Lab3
+    CloudFront Logs Prefix: Chwebacca-logs/ ← intentionally misspelled
+    AWS Account ID: 200819971986
+
+Running Scripts:
+
+        python3 jarvis_cloudfront_log_explainer.py --latest 5
+        python3 jarvis_cloudfront_log_explainer.py --prefix cloudfront-logs/ --latest 10
+        python3 jarvis_cloudfront_log_explainer.py --prefix cloudfront-logs/ --latest 5 --keep
+
+
+From stdin (nice for pipelines)
+
+        zcat cloudfront.log.gz | python3 jarvis_cloudfront_log_explainer.py --mode standard -
+
+Where “Hit / Miss / RefreshHit” come from (student-facing truth)
+    In standard CloudFront logs, you usually read the field:
+        x-edge-result-type (primary)
+        sometimes also x-edge-response-result-type
+
+    Values commonly include: Hit, Miss, RefreshHit, plus other states like Error, LimitExceeded, etc.
+
+That’s why the script reports “Other:*” — so students don’t blindly ignore unusual outcomes.
+
+
+
+        
+
+
+
+
