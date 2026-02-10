@@ -20,9 +20,9 @@
 set -e
 
 REGION="${REGION:-us-east-1}"
-LOG_GROUP="${LOG_GROUP:-/aws/ec2/chrisbarm-rds-app}"
+LOG_GROUP="${LOG_GROUP:-/aws/ec2/jarvis-rds-app}"
 ALARM_NAME="${ALARM_NAME:-lab-db-connection-failure}"
-DB_INSTANCE="${DB_INSTANCE:-chrisbarm-rds01}"
+DB_INSTANCE="${DB_INSTANCE:-jarvis-rds01}"
 RDS_SG="${RDS_SG:-sg-09253c24b2eee0c11}"
 EC2_SG="${EC2_SG:-sg-0059285ecdea5d41d}"
 SECRET_ID="${SECRET_ID:-lab1a/rds/mysql}"
@@ -337,3 +337,4 @@ echo "  3. Verify alarm clears (Section 6.1)"
 echo "  4. Verify logs normalize (Section 6.2)"
 echo "  5. Complete incident report (next script)"
 echo ""
+
