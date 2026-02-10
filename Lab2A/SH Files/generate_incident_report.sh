@@ -10,7 +10,7 @@
 set -e
 
 REGION="${REGION:-us-east-1}"
-LOG_GROUP="${LOG_GROUP:-/aws/ec2/chrisbarm-rds-app}"
+LOG_GROUP="${LOG_GROUP:-/aws/ec2/jarvis-rds-app}"
 
 echo ""
 echo "╔════════════════════════════════════════════════════════════════╗"
@@ -65,7 +65,7 @@ Example:
 
 Example:
 ```
-$ aws logs filter-log-events --log-group-name /aws/ec2/chrisbarm-rds-app --filter-pattern "Access denied"
+$ aws logs filter-log-events --log-group-name /aws/ec2/jarvis-rds-app --filter-pattern "Access denied"
 [ERROR] Access denied for user 'admin'@'10.0.1.15'
 ```
 
@@ -121,7 +121,7 @@ $ aws cloudwatch describe-alarms --alarm-name lab-db-connection-failure
 **No New Errors in Logs:**
 ```
 $ aws logs filter-log-events \
-  --log-group-name /aws/ec2/chrisbarm-rds-app \
+  --log-group-name /aws/ec2/jarvis-rds-app \
   --filter-pattern "ERROR" \
   --start-time <recovery-time>
 [PASTE OUTPUT - SHOULD BE EMPTY OR MINIMAL]
@@ -244,3 +244,4 @@ echo ""
 echo "Edit the file and answer all questions:"
 echo "  $REPORT_FILE"
 echo ""
+
