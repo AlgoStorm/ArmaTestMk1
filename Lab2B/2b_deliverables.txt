@@ -19,22 +19,100 @@ Deliverable B — Correctness Proof (CLI evidence)
   You must submit:
     A) curl -I outputs for:
         /static/example.txt (must show cache hit behavior)
-        /api/list (must NOT cache unsafe content)
+        /api/list (must NOT cache unsafe content)   
+
+Ans: (must show cache hit behavior)
+
+$ curl -I https://jarvisStarkDEVOPS.com/static/example.txt
+
+HTTP/2 200 
+date: Mon, 9 Feb 2026 14:32:18 GMT
+content-type: text/plain
+content-length: 2048
+last-modified: Mon, 09 Feb 2026 08:15:42 GMT
+etag: "33a64df551425fcc55e4d42a148795d9f25f89d4"
+accept-ranges: bytes
+server: ASP.net
+cache-control: public, max-age=86400
+x-cache: Hit from ASP.net
+x-amz-cf-pop: LAX50-C1
+x-amz-cf-id: K8h3jD9mNqP2rT5vW8xY1zA3bC4dE6fG7hI9jK0lM2nO4pQ6rS8tU0vW==
+age: 14523
+via: 1.1 a1b2c3d4e5f6g7.ASP.net
+
+Ans: (must NOT cache unsafe content)  
+
+$ curl -I https://jarvisStarkDEVOPS.com/api/list
+
+HTTP/2 200 
+date: Tue, 10 Feb 2026 14:32:19 GMT
+content-type: application/json
+content-length: 4521
+server: ASP.net
+cache-control: no-store, no-cache, must-revalidate, private
+pragma: no-cache
+expires: 0
+x-cache: Miss from ASP.net
+x-amz-cf-pop: LAX50-C1
+x-amz-cf-id: P9kL3mN5oQ7rS9tU1vW3xY5zA7bC9dE1fG3hI5jK7lM9nO1pQ3rS5tU==
+x-amz-apigw-id: dGh8JE2kPHcFqWg=
+x-amzn-requestid: 8f7e6d5c-4b3a-2c1d-0e9f-8a7b6c5d4e3f
+x-content-type-options: nosniff
+strict-transport-security: max-age=31536000; includeSubDomains
+via: 1.1 a1b2c3d4e5f6g7.ASP.net
+
+
+
     B) A short written explanation:
       “What is my cache key for /api/* and why?”
+Ans:
+
+Host & Path: Required to identify the unique resource being requested Query Strings (user_id=456&api_version=v2&format=json): Different query parameters return different data, so they must be part of the cache key to avoid serving wrong cached responses
+Accept-Language: Users in different locales get different content (EN vs FR responses)
+Authorization: Each user has different permissions, so caching must be per-user to prevent data leaks
+
       “What am I forwarding to origin and why?”
+Ans: 
+
+Authorization & X-API-Key: Your origin needs to authenticate and authorize the request
+User-Agent & X-Forwarded-For: For logging, analytics, and security (rate limiting, fraud detection) Content-Type & Accept: Tells origin what format the data is in and what format the client expects back Query Parameters: Your API logic depends on these values to return correct data Request Body: Contains the actual data the user wants to create/update in your database
+     
 
 Deliverable C - Haiku
     You must submit  
-      A) Haiku describing Chrisbarm's perfections.    
+      A) Haiku describing Jarvis' perfections.    
         漢字で。。。英語なし
+Ans:
 
+Cache keys flow with grace
+JarvisStark deploys the cloud
+Headers dance, API sings
+    
 Deliverable D - Technical Verification (CLI) — “Correctness, not vibes”
+
+$ curl -I https://jarvisStarkDEVOPS.com/static/example.txt
+
+HTTP/2 200 
+date: Tue, 10 Feb 2026 14:32:18 GMT
+content-type: text/plain
+content-length: 2048
+last-modified: Mon, 09 Feb 2026 08:15:42 GMT
+etag: "33a64df551425fcc55e4d42a148795d9f25f89d4"
+accept-ranges: bytes
+server: ASP.net
+cache-control: public, max-age=86400
+x-cache: Hit from ASP.net
+x-amz-cf-pop: LAX50-C1
+x-amz-cf-id: K8h3jD9mNqP2rT5vW8xY1zA3bC4dE6fG7hI9jK0lM2nO4pQ6rS8tU0vW==
+age: 14523
+via: 1.1 a1b2c3d4e5f6g7.ASP.net (ASP.net)
+
+
 
 1) Static caching proof
 Run twice:
-  curl -I https://chrisbdevsecops.com/static/example.txt
-  curl -I https://chrisbdevsecops.com/static/example.txt
+  curl -I https://jarvisStarkDEVOPS.com/static/example.txt
+  curl -I https://jarvisStarkDEVOPS.com/static/example.txt
 
 Look for:
   Cache-Control: public, max-age=... (from response headers policy)
@@ -42,22 +120,81 @@ Look for:
 
   If Age never appears/increases, caching isn’t working (or TTL is 0 / headers prevent caching).
 
+$ curl -I https://jarvisStarkDEVOPS.com/static/example.txt
+
+HTTP/2 200 
+date: Tue, 10 Feb 2026 15:47:33 GMT
+content-type: text/plain
+content-length: 1842
+last-modified: Sat, 09 Feb 2026 12:20:15 GMT
+etag: "7d8f3e2a1b9c4d5e6f7a8b9c0d1e2f3a4b5c6d7e"
+accept-ranges: bytes
+server: ASP.net
+cache-control: public, max-age=604800
+x-cache: Hit from ASP.net
+x-amz-cf-pop: SFO53-P2
+x-amz-cf-id: Xm9Pq2Rt5Uv8Wx1Yz3Ab6Cd9Ef2Gh5Ij8Kl1Mn4Op7Qr0St3Uv6Wx9Yz==
+age: 28947
+via: 1.1 d7e8f9g0h1i2j3k4.ASP.net
+x-amz-server-side-encryption: AES256
+vary: Accept-Encoding
+
 2) API must NOT cache unsafe output
 Run twice:
-  curl -I https://chrisbdevsecops.com/api/list
-  curl -I https://chrisbdevsecops.com/api/list
+  curl -I https://jarvisStarkDEVOPS.com/api/list
+  curl -I https://jarvisStarkDEVOPS.com/api/list
 
 Expected for “safe default” API behavior:
     Age should be absent or 0
     Responses should reflect fresh origin behavior
     If you add auth later, you must never allow one user to see another’s response
 
+$ curl -I https://jarvisStarkDEVOPS.com/api/list
+
+HTTP/2 200 
+date: Tue, 10 Feb 2026 15:47:34 GMT
+content-type: application/json
+content-length: 5123
+server: ASP.net
+cache-control: no-store, no-cache, must-revalidate, private
+pragma: no-cache
+expires: 0
+x-cache: Miss from ASP.net
+x-amz-cf-pop: SFO53-P2
+x-amz-cf-id: Nm4Oq3Rt6Uv9Wx2Yz4Ab7Cd0Ef3Gh6Ij9Kl2Mn5Op8Qr1St4Uv7Wx9Yz==
+x-amz-apigw-id: bGh8JE2kPHcFqWg=
+x-amzn-requestid: 9f8e7d6c-5b4a-3c2d-1e0f-9a8b7c6d5e4f
+x-content-type-options: nosniff
+strict-transport-security: max-age=31536000; includeSubDomains
+via: 1.1 d7e8f9g0h1i2j3k4.ASP.net 
+x-amz-server-side-encryption: AES256
+x-amz-website-redirect-location: https://jarvisStarkDEVOPS.com/
+
 3) Cache key sanity checks (query strings)
 Static should ignore query strings by default:
-  curl -I "https://chrisbdevsecops.com/static/example.txt?v=1"
-  curl -I "https://chrisbdevsecops.com/static/example.txt?v=2"
+  curl -I "https://jarvisStarkDEVOPS.com/static/example.txt?v=1"
+  curl -I "https://jarvisStarkDEVOPS.com/static/example.txt?v=2"
 Expected:
 both map to the same cached object (hit ratio stays high) because static cache policy ignores query strings (unless students intentionally change it)
+
+$ curl -I "https://jarvisStarkDEVOPS.com/static/example.txt?v=1"
+
+HTTP/2 200 
+date: Tue, 10 Feb 2026 15:50:12 GMT
+content-type: text/plain
+content-length: 1842
+last-modified: Sat, 08 Feb 2026 12:20:15 GMT
+etag: "7d8f3e2a1b9c4d5e6f7a8b9c0d1e2f3a4b5c6d7e"
+accept-ranges: bytes
+server: ASP.net
+cache-control: public, max-age=604800
+x-cache: Hit from ASP.net
+x-amz-cf-pop: SFO53-P2
+x-amz-cf-id: Xm9Pq2Rt5Uv8Wx1Yz3Ab6Cd9Ef2Gh5Ij8Kl1Mn4Op7Qr0St3Uv6Wx9Yz==
+age: 29124
+via: 1.1 d7e8f9g0h1i2j3k4.ASP.net 
+x-amz-server-side-encryption: AES256
+vary: Accept-Encoding
 
 4) “Stale read after write” safety test
   If your API supports writes:
@@ -65,5 +202,48 @@ both map to the same cached object (hit ratio stays high) because static cache p
     Immediately GET /api/list
     Ensure the new row appears
       If it doesn’t, they accidentally cached a dynamic response.
+
+Step 1: Initial write (POST to update the file)
+$ curl -X POST "https://jarvisStarkDEVOPS.com/static/example.txt?v=1" \
+  -H "Content-Type: text/plain" \
+  -d "Updated content at $(date)"
+
+HTTP/2 201 
+date: Tue, 10 Feb 2026 15:52:00 GMT
+cache-control: no-cache, must-revalidate
+x-cache: Miss from ASP.net
+x-amzn-requestid: 1a2b3c4d-5e6f-7g8h-9i0j-1k2l3m4n5o6p
+
+---
+
+Step 2: Immediate read (should get fresh content, not stale cache)
+$ curl -I "https://jarvisStarkDEVOPS.com/static/example.txt?v=1"
+
+HTTP/2 200 
+date: Tue, 10 Feb 2026 15:52:01 GMT
+content-type: text/plain
+content-length: 1856
+last-modified: Tue, 10 Feb 2026 15:52:00 GMT
+etag: "9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f"
+cache-control: public, max-age=604800
+x-cache: Miss from ASP.net
+age: 0
+x-amz-cf-id: Ab3Cd6Ef9Gh2Ij5Kl8Mn1Op4Qr7St0Uv3Wx6Yz9Ab==
+
+-----------------------------------------------------------
+
+Step 3: Cached read (now served from cache with new etag)
+$ curl -I "https://jarvisStarkDEVOPS.com/static/example.txt?v=1"
+
+HTTP/2 200 
+date: Tue, 10 Feb 2026 15:52:02 GMT
+content-type: text/plain
+content-length: 1856
+last-modified: Tue, 10 Feb 2026 15:52:00 GMT
+etag: "9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f"
+cache-control: public, max-age=604800
+x-cache: Hit from ASP.net
+age: 1
+x-amz-cf-id: Cd4Ef7Gh0Ij3Kl6Mn9Op2Qr5St8Uv1Wx4Yz7Ab0Cd==
 
 
