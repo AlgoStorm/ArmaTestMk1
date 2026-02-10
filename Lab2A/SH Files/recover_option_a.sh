@@ -13,7 +13,7 @@ set -e
 
 REGION="${REGION:-us-east-1}"
 SECRET_ID="${SECRET_ID:-lab1a/rds/mysql}"
-DB_INSTANCE="${DB_INSTANCE:-chrisbarm-rds01}"
+DB_INSTANCE="${DB_INSTANCE:-jarvis-rds01}"
 
 echo ""
 echo "╔════════════════════════════════════════════════════════════════╗"
@@ -107,10 +107,11 @@ echo "  2. Monitor alarm state:"
 echo "     aws cloudwatch describe-alarms --alarm-names lab-db-connection-failure"
 echo ""
 echo "  3. Check for new errors in logs:"
-echo "     aws logs filter-log-events --log-group-name /aws/ec2/chrisbarm-rds-app --filter-pattern ERROR"
+echo "     aws logs filter-log-events --log-group-name /aws/ec2/jarvis-rds-app --filter-pattern ERROR"
 echo ""
 echo "  4. Expected: Alarm transitions to OK within 5 minutes"
 echo ""
 
 # Save recovery completion time
 echo "{\"recovery_type\": \"credential_drift\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"status\": \"completed\"}" > recovery_complete.json
+
