@@ -12,7 +12,7 @@ set -e
 # CONFIGURATION - SET YOUR VARIABLES HERE
 # ============================================================================
 REGION="${REGION:-us-east-1}"
-EXPECTED_ROLE_NAME="${EXPECTED_ROLE_NAME:-chrisbarm-ec2-role01}"
+EXPECTED_ROLE_NAME="${EXPECTED_ROLE_NAME:--ec2-role01}"
 SECRET_ID="${SECRET_ID:-lab1a/rds/mysql}"
 
 echo "============================================"
@@ -106,3 +106,4 @@ else
   echo "✅ All EC2-side checks passed!"
   exit 0
 fi
+
