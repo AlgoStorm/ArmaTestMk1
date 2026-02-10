@@ -19,7 +19,7 @@ EC2_SG="${EC2_SG:-sg-0059285ecdea5d41d}"
 # Resolve RDS security group if the default is invalid
 if ! aws ec2 describe-security-groups --group-ids "$RDS_SG" --region "$REGION" --output text >/dev/null 2>&1; then
   RDS_SG=$(aws ec2 describe-security-groups \
-    --filters "Name=group-name,Values=chrisbarm-rds-sg01" \
+    --filters "Name=group-name,Values=jarvis-rds-sg01" \
     --region "$REGION" \
     --query "SecurityGroups[0].GroupId" \
     --output text 2>/dev/null)
@@ -145,3 +145,4 @@ cat > "$INCIDENT_STATE_FILE" <<EOF
 EOF
 
 echo "Incident state saved to: $INCIDENT_STATE_FILE"
+
