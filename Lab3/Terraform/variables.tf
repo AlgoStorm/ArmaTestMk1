@@ -4,7 +4,7 @@
   default     = "us-east-1"
 }
 
-variable "project_name" {
+variable "GRU_project_name" {
   description = "Prefix for naming (used in tags and resource names)."
   type        = string
   default     = "jarvis"
@@ -145,3 +145,4 @@ variable "saopaulo_tgw_id" {
   default     = null
   nullable    = true
 }
+
