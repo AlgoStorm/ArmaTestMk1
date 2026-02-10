@@ -1,7 +1,7 @@
 variable "project_name" {
   description = "Prefix for naming (used in tags and resource names)."
   type        = string
-  default     = "liberdade"
+  default     = "libo"
 }
 
 variable "vpc_cidr" {
@@ -112,3 +112,4 @@ variable "asg_desired_capacity" {
   type        = number
   default     = 1
 }
+
