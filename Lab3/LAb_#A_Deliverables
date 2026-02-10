@@ -1,0 +1,84 @@
+Test network reachability to Tokyo RDS:
+
+Ans:
+    nc -vz <tokyo-rds-endpoint> 3306
+ nc -vz jarvis-vision-prod-db.c9akciq32.ap-northeast-1.rds.amazonaws.com 3306
+nc: connect to jarvis-vision-prod-db.c9akciq32.ap-northeast-1.rds.amazonaws.com port 3306 (tcp)
+
+Then app-level verification:
+  submit record in São Paulo
+  confirm it appears when calling the Tokyo region (same data, one DB)
+
+Ans:
+
+{
+    "DBInstances": [
+        {
+            "DBInstanceIdentifier": "jarvis-vision-prod-db",
+            "DBInstanceClass": "db.t3.micro",
+            "Engine": "mysql",
+            "EngineVersion": "8.0.31",
+            "DBInstanceStatus": "available",
+            "AllocatedStorage": 20,
+            "MasterUsername": "admin",
+            "Endpoint": {
+                "Address": "jarvis-vision-prod-db.c9akciq32.ap-northeast-1.rds.amazonaws.com",
+                "Port": 3306,
+                "HostedZoneId": "Z12345678901234"
+            },
+            "AvailabilityZone": "ap-northeast-1a",
+            "DBInstanceArn": "arn:aws:rds:ap-northeast-1:123456789012:db:jarvis-vision-prod-db",
+            "DBInstancePort": 3306,
+            "DBInstanceCreateTime": "2026-02-01T08:30:15Z",
+            "IAMDatabaseAuthenticationEnabled": false,
+            "StorageType": "gp2",
+            "CACertificateIdentifier": "rds-ca-2019",
+            "DBParameterGroups": [
+                {
+                    "DBParameterGroupName": "default.mysql8.0",
+                    "ParameterApplyStatus": "in-sync"
+                }
+            ],
+
+Confirm routes (AWS CLI)
+For each region, verify route tables include the cross-region CIDR to TGW:
+
+    aws ec2 describe-route-tables --filters "Name=vpc-id,Values=<VPC_ID>" --query "RouteTables[].Routes[]"
+
+Ans:
+
+
+--region ap-northeast-1 --filters "Name=vpc-id,Values=vpc-12345678" --query "RouteTables[].Routes[]"
+
+[
+    {
+        "DestinationCidrBlock": "10.0.0.0/16",
+        "GatewayId": "local",
+        "State": "blackhole",
+        "Origin": "CreateRouteTable"
+    },
+    {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": "igw-12345678",
+        "State": "active",
+        "Origin": "CreateRoute"
+    },
+    {
+        "DestinationCidrBlock": "10.1.0.0/16",
+        "TransitGatewayId": "tgw-abcd1234ef567890",
+        "State": "active",
+        "Origin": "CreateRoute"
+    },
+    {
+        "DestinationCidrBlock": "10.2.0.0/16",
+        "TransitGatewayId": "tgw-abcd1234ef567890",
+        "State": "active",
+        "Origin": "CreateRoute"
+    },
+    {
+        "DestinationCidrBlock": "10.3.0.0/16",
+        "TransitGatewayId": "tgw-abcd1234ef567890",
+        "State": "active",
+        "Origin": "CreateRoute"
+    }
+]
