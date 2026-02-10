@@ -14,7 +14,7 @@ set -e
 
 REGION="${REGION:-us-east-1}"
 SECRET_ID="${SECRET_ID:-lab1a/rds/mysql}"
-DB_INSTANCE="${DB_INSTANCE:-chrisbarm-rds01}"
+DB_INSTANCE="${DB_INSTANCE:-jarvis-rds01}"
 
 echo "============================================"
 echo "Incident Injection: Option A — Secret Drift"
@@ -107,3 +107,4 @@ cat > "$INCIDENT_STATE_FILE" <<EOF
 EOF
 
 echo "Incident state saved to: $INCIDENT_STATE_FILE"
+
